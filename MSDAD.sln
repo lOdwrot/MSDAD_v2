@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppetMaster", "PuppetMaste
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonTypes", "CommonTypes\CommonTypes.csproj", "{D53AEE3A-43D9-4FCF-8E6B-0F842F871D5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApp1", "WindowsFormsApp1\WindowsFormsApp1.csproj", "{14C504FA-C961-430C-9323-CB02AF0A9169}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "WindowsFormsApp1\Client.csproj", "{14C504FA-C961-430C-9323-CB02AF0A9169}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
