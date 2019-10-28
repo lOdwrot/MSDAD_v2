@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace WindowsFormsApp1
+namespace Client
 {
 	static class Client
 	{
@@ -19,7 +19,8 @@ namespace WindowsFormsApp1
 			string[] param = null;
 			if (args.Length == 4 + 1) // count with first argument, which is the process' name
 			{
-				param = new string[] { args[1], args[2], args[3], args[4] }; // in order: username, clientUrl, serverUrl and script file
+				// in order: username, clientUrl, serverUrl and script file
+				param = new string[] { args[1], args[2], args[3], args[4] };
 			}
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
