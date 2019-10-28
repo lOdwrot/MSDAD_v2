@@ -1,3 +1,8 @@
 .vs/*
 */bin/*
 *Debug*
+CommonTypes/obj/project.assets.json
+CommonTypes/obj/CommonTypes.csproj.nuget.g.targets
+CommonTypes/obj/CommonTypes.csproj.nuget.g.props
+CommonTypes/obj/CommonTypes.csproj.nuget.dgspec.json
+CommonTypes/obj/CommonTypes.csproj.nuget.cache
