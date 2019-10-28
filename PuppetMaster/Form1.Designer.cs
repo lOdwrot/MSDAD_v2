@@ -61,6 +61,8 @@
             this.buttonUnfreezeServer = new System.Windows.Forms.Button();
             this.affectedServerId = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.clientURL = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // serverId
@@ -107,14 +109,14 @@
             // 
             // clientServerURL
             // 
-            this.clientServerURL.Location = new System.Drawing.Point(188, 112);
+            this.clientServerURL.Location = new System.Drawing.Point(306, 113);
             this.clientServerURL.Name = "clientServerURL";
             this.clientServerURL.Size = new System.Drawing.Size(100, 20);
             this.clientServerURL.TabIndex = 6;
             // 
             // clientScriptFile
             // 
-            this.clientScriptFile.Location = new System.Drawing.Point(306, 114);
+            this.clientScriptFile.Location = new System.Drawing.Point(424, 115);
             this.clientScriptFile.Name = "clientScriptFile";
             this.clientScriptFile.Size = new System.Drawing.Size(100, 20);
             this.clientScriptFile.TabIndex = 7;
@@ -158,6 +160,7 @@
             this.buttonInstantiateClient.TabIndex = 12;
             this.buttonInstantiateClient.Text = "Instantiate Client";
             this.buttonInstantiateClient.UseVisualStyleBackColor = true;
+            this.buttonInstantiateClient.Click += new System.EventHandler(this.buttonInstantiateClient_Click);
             // 
             // buttonAddRoom
             // 
@@ -242,7 +245,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(188, 96);
+            this.label7.Location = new System.Drawing.Point(306, 97);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(63, 13);
             this.label7.TabIndex = 22;
@@ -251,7 +254,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(306, 96);
+            this.label8.Location = new System.Drawing.Point(424, 97);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(53, 13);
             this.label8.TabIndex = 23;
@@ -336,11 +339,29 @@
             this.label12.TabIndex = 32;
             this.label12.Text = "Server Id";
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(168, 97);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(58, 13);
+            this.label13.TabIndex = 33;
+            this.label13.Text = "Client URL";
+            // 
+            // clientURL
+            // 
+            this.clientURL.Location = new System.Drawing.Point(171, 113);
+            this.clientURL.Name = "clientURL";
+            this.clientURL.Size = new System.Drawing.Size(100, 20);
+            this.clientURL.TabIndex = 34;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 590);
+            this.Controls.Add(this.clientURL);
+            this.Controls.Add(this.label13);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.affectedServerId);
             this.Controls.Add(this.buttonUnfreezeServer);
@@ -417,6 +438,8 @@
         private System.Windows.Forms.Button buttonUnfreezeServer;
         private System.Windows.Forms.TextBox affectedServerId;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox clientURL;
     }
 }
 

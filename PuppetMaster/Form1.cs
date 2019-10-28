@@ -14,7 +14,8 @@ namespace PuppetMaster
     
     public partial class Form1 : Form
     {
-        private static string CLIENT_EXECUTABLE_PATH = "xxx";
+
+        private static string CLIENT_EXECUTABLE_PATH = "../../../WindowsFormsApp1/bin/Debug/WindowsFormsApp1.exe";
         private static string SERVER_EXECUTABLE_PATH = "xxx";
         public Form1()
         {
@@ -41,11 +42,49 @@ namespace PuppetMaster
                 {
                     StartInfo = new ProcessStartInfo
                     {
-                        FileName = "C:\\Windows\\System32\\fsutil.exe",
+                        FileName = SERVER_EXECUTABLE_PATH,
                         Arguments = "behavior query SymlinkEvaluation",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
                         CreateNoWindow = true
+                    }
+                };
+
+                process.Start();
+
+                while (!process.StandardOutput.EndOfStream)
+                {
+                    var line = process.StandardOutput.ReadLine();
+                    Console.WriteLine(line);
+                }
+
+                process.WaitForExit();
+            }
+            catch (Exception err)
+            {
+                Console.WriteLine(err.Message);
+            }
+        }
+
+        private void buttonInstantiateClient_Click(object sender, EventArgs e)
+        {
+            String cUserName = clientUsername.Text;
+            String cURL = clientServerURL.Text;
+            String cScriptFile = clientScriptFile.Text;
+            String cClientURL = clientURL.Text;
+
+            String args = cUserName + " " + cURL + " " + cScriptFile;
+            try
+            {
+                var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = CLIENT_EXECUTABLE_PATH,
+                        Arguments = args,
+                        UseShellExecute = false,
+                        RedirectStandardOutput = false,
+                        CreateNoWindow = false
                     }
                 };
 
