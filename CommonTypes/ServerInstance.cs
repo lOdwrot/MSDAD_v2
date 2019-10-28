@@ -6,6 +6,11 @@ namespace CommonTypes
 {
     public class ServerInstance
     {
+		public void RegisterNewClient(string username, string clientUrl)
+		{
+			throw new NotImplementedException();
+		}
+
         public string getStatus()
         {
             throw new NotImplementedException();
