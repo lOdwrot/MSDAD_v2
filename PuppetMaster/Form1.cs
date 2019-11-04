@@ -109,5 +109,34 @@ namespace PuppetMaster
             //    IAsyncResult RemAr = RemoteDel.BeginInvoke(RemoteCallback, null);
             //}
         }
+
+        private void buttonExecuteScript_Click(object sender, EventArgs e)
+        {
+            List<Command> commands = new List<Command>();
+
+            try
+            {
+                commands = new ScriptParser().parseFile(script.Text);
+            }
+            catch(System.IO.FileNotFoundException err)
+            {
+                MessageBox.Show(err.Message);
+                return;
+            }
+
+             
+
+            foreach(Command cmd in commands)
+            {
+                logs.Text += ("Exec: " + cmd.CommandName + " | " + cmd.getArgsAsString() + "\n");
+                switch(cmd.CommandName)
+                {
+
+                    default:
+                        logs.Text += "Command Not Implemented\n";
+                        break;
+                }
+            }
+        }
     }
 }
