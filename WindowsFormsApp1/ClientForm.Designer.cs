@@ -53,6 +53,7 @@
 			this.button4 = new System.Windows.Forms.Button();
 			this.slotListLabel = new System.Windows.Forms.Label();
 			this.slotListBox = new System.Windows.Forms.ListBox();
+			this.refreshList = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.portBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -235,6 +236,7 @@
 			// 
 			// splitContainer2.Panel1
 			// 
+			this.splitContainer2.Panel1.Controls.Add(this.refreshList);
 			this.splitContainer2.Panel1.Controls.Add(this.button3);
 			this.splitContainer2.Panel1.Controls.Add(this.meetingsListLabel);
 			this.splitContainer2.Panel1.Controls.Add(this.meetingsListBox);
@@ -264,6 +266,7 @@
 			this.button3.TabIndex = 3;
 			this.button3.Text = "New Meeting...";
 			this.button3.UseVisualStyleBackColor = true;
+			this.button3.Click += new System.EventHandler(this.button3_Click);
 			// 
 			// meetingsListLabel
 			// 
@@ -380,6 +383,18 @@
 			this.slotListBox.Size = new System.Drawing.Size(237, 147);
 			this.slotListBox.TabIndex = 1;
 			// 
+			// refreshList
+			// 
+			this.refreshList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.refreshList.Location = new System.Drawing.Point(169, 6);
+			this.refreshList.Name = "refreshList";
+			this.refreshList.Size = new System.Drawing.Size(75, 23);
+			this.refreshList.TabIndex = 4;
+			this.refreshList.Text = "Refresh List";
+			this.refreshList.UseVisualStyleBackColor = true;
+			this.refreshList.Click += new System.EventHandler(this.refreshList_Click);
+			// 
 			// ClientForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -434,6 +449,7 @@
 		private System.Windows.Forms.GroupBox debugBox;
 		private System.Windows.Forms.Button debugButton;
 		private System.Windows.Forms.Label debugLabel;
+		private System.Windows.Forms.Button refreshList;
 	}
 }
 

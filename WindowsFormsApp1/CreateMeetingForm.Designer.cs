@@ -200,6 +200,7 @@
 			this.slotsBox.Name = "slotsBox";
 			this.slotsBox.Size = new System.Drawing.Size(160, 134);
 			this.slotsBox.TabIndex = 0;
+			this.slotsBox.SelectedIndexChanged += new System.EventHandler(this.slotsBox_SelectedIndexChanged);
 			// 
 			// tabPage2
 			// 
@@ -282,6 +283,7 @@
 			this.participantBox.Name = "participantBox";
 			this.participantBox.Size = new System.Drawing.Size(160, 134);
 			this.participantBox.TabIndex = 10;
+			this.participantBox.SelectedIndexChanged += new System.EventHandler(this.participantBox_SelectedIndexChanged);
 			// 
 			// button5
 			// 

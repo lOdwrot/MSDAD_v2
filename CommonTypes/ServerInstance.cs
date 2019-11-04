@@ -4,17 +4,17 @@ using System.Text;
 
 namespace CommonTypes
 {
-    public class ServerInstance
+    public class ServerInstance : IRemoteMachine
     {
         public string getStatus()
         {
             throw new NotImplementedException();
         }
 
-		public void RegisterNewClient(string username, string clientUrl)
-		{
-			throw new NotImplementedException();
-		}
+		//public void RegisterNewClient(string username, string clientUrl)
+		//{
+		//	throw new NotImplementedException();
+		//}
 
 		public List<Meeting> GetMeetings()
 		{
@@ -26,7 +26,12 @@ namespace CommonTypes
 			throw new NotImplementedException();
 		}
 
-		public bool JoinMeeting(string username, int meetingId, Slot slotPicked)
+		public bool JoinMeeting(string username, string meetingTopic, Slot slotPicked)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool CloseMeeting(string username, string meetingTopic)
 		{
 			throw new NotImplementedException();
 		}
