@@ -161,31 +161,35 @@ namespace Client
 
 		private void CreateNewMeeting()
 		{
-			// TODO: create new popup, with two buttons: "Create" and "Cancel"
-
-			// if (dialogResult == DialogResult.OK)
-			try
+			CreateMeetingForm meetingPopup = new CreateMeetingForm();
+			DialogResult dialogResult = meetingPopup.ShowDialog();
+			if (dialogResult == DialogResult.OK)
 			{
-				// TODO: create Meeting object from popup form fields
-				Meeting newMeeting = null;
-
-				// contact server
-				ServerInstance obj = (ServerInstance)Activator.GetObject(
-					typeof(ServerInstance),
-					preferredServer);
-
-				// tell server to create a new meeting
-				bool created = obj.CreateMeeting(newMeeting);
-
-				// TODO: throw custom error if meeting could not be created
-				if (!created)
+				try
 				{
+					// create Meeting object from popup form fields
+					Meeting newMeeting = new Meeting(this.usernameBox.Text,
+						meetingPopup.getTopic(), meetingPopup.getMinimumParticipants(),
+						meetingPopup.getProposals(), meetingPopup.getInvitedParticipants());
 
+					// contact server
+					ServerInstance obj = (ServerInstance)Activator.GetObject(
+						typeof(ServerInstance),
+						preferredServer);
+
+					// tell server to create a new meeting
+					bool created = obj.CreateMeeting(newMeeting);
+
+					// TODO: throw custom error if meeting could not be created
+					if (!created)
+					{
+
+					}
 				}
-			}
-			catch (RemotingException e)
-			{
-				ThrowErrorPopup(e);
+				catch (RemotingException e)
+				{
+					ThrowErrorPopup(e);
+				}
 			}
 		}
 
@@ -274,5 +278,9 @@ namespace Client
 			}
 		}
 
+		private void debugButton_Click(object sender, EventArgs e)
+		{
+			RunNextScript();
+		}
 	}
 }

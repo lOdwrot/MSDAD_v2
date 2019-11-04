@@ -55,6 +55,12 @@
       <DependentUpon>ClientForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Client.cs" />
+    <Compile Include="CreateMeetingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CreateMeetingForm.Designer.cs">
+      <DependentUpon>CreateMeetingForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ErrorPopupForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -64,6 +70,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ClientForm.resx">
       <DependentUpon>ClientForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CreateMeetingForm.resx">
+      <DependentUpon>CreateMeetingForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ErrorPopupForm.resx">
       <DependentUpon>ErrorPopupForm.cs</DependentUpon>

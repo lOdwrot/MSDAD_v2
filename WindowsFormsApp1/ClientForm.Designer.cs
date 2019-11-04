@@ -200,6 +200,7 @@
 			this.debugButton.TabIndex = 4;
 			this.debugButton.Text = "Next";
 			this.debugButton.UseVisualStyleBackColor = true;
+			this.debugButton.Click += new System.EventHandler(this.debugButton_Click);
 			// 
 			// debugLabel
 			// 
