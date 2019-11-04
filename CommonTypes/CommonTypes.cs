@@ -6,16 +6,16 @@ namespace CommonTypes
     public enum MeetingStatus {New, Confirmed, Canceled};
     public class Meeting
     {
-        private string coordinator;
-        private string topic;
-        private int minimumParticipants;
-        private MeetingStatus status;
-        private List<String> invited;
-        private List<Slot> proposals;
-        private List<Vote> votes;
-        private Slot selectedSlot;
+        public string coordinator { get; }
+		public string topic { get; }
+		public int minimumParticipants { get; }
+		public MeetingStatus status { get; }
+		public List<String> invited { get; }
+		public List<Slot> proposals { get; }
+		public List<Vote> votes { get; }
+		public Slot selectedSlot { get; }
 
-        public Meeting(string coordinator, string topic, int minimumParticipants, List<Slot> proposals, List<String> invited)
+		public Meeting(string coordinator, string topic, int minimumParticipants, List<Slot> proposals, List<String> invited)
         {
             this.coordinator = coordinator;
             this.topic = topic;
@@ -28,6 +28,7 @@ namespace CommonTypes
             this.status = MeetingStatus.New;
         }
 
+		// TODO: should users only be able to vote on one slot? PDF is unclear about this
         public void submitVotes(string voterName, List<Slot> slots)
         {
             foreach(Slot s in slots)

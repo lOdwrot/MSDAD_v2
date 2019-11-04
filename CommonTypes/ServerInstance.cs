@@ -26,7 +26,12 @@ namespace CommonTypes
 			throw new NotImplementedException();
 		}
 
-		public bool JoinMeeting(string username, int meetingId, Slot slotPicked)
+		public bool JoinMeeting(string username, string meetingTopic, Slot slotPicked)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool CloseMeeting(string username, string meetingTopic)
 		{
 			throw new NotImplementedException();
 		}

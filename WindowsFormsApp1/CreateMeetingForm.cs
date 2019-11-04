@@ -59,7 +59,12 @@ namespace Client
 				new Location(this.locationBox.Text, null, null))
 			);
 
-			this.removeSlotButton.Enabled = true;
+			this.removeSlotButton.Enabled = this.slotsBox.SelectedIndex != -1;
+		}
+
+		private void slotsBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			this.removeSlotButton.Enabled = this.slotsBox.SelectedIndex != -1;
 		}
 
 		private void removeSlotButton_Click(object sender, EventArgs e)
@@ -77,7 +82,12 @@ namespace Client
 		{
 			this.participants.Add(this.participantNameBox.Text);
 
-			this.removeParticipantButton.Enabled = true;
+			this.removeParticipantButton.Enabled = this.participantBox.SelectedIndex != -1;
+		}
+
+		private void participantBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			this.removeParticipantButton.Enabled = this.participantBox.SelectedIndex != -1;
 		}
 
 		private void removeParticipantButton_Click(object sender, EventArgs e)

@@ -14,6 +14,7 @@ using System.Runtime.Remoting.Channels.Tcp;
 using System.Text.RegularExpressions;
 using CommonTypes;
 using System.IO;
+using System.Threading;
 
 namespace Client
 {
@@ -31,6 +32,9 @@ namespace Client
 		{
 			// initialize form
 			InitializeComponent();
+
+			// bind meetings to GUI list
+			this.meetingsListBox.DataSource = this.meetingsList;
 
 			// read config file
 			var appSettings = ConfigurationManager.AppSettings;
@@ -66,9 +70,6 @@ namespace Client
 
 				// create client remote object
 				this.CreateRemoteService(port, serviceName);
-
-				//// register client in server
-				//this.RegisterClient(username, clientUrl);
 
 				// run script file
 				this.ReadScriptFile(scriptFile);
@@ -114,6 +115,11 @@ namespace Client
 			}
 		}
 
+		private void refreshList_Click(object sender, EventArgs e)
+		{
+			GetMeetingsList();
+		}
+
 		// Network Functions
 
 		private void CreateRemoteService(string port = null, string serviceName = null)
@@ -123,13 +129,18 @@ namespace Client
 
 			try
 			{
+				// reserve port
 				TcpChannel channel = new TcpChannel(int.Parse(port));
 				ChannelServices.RegisterChannel(channel, true);
 
+				// register client remote object
 				RemotingConfiguration.RegisterWellKnownServiceType(
 					typeof(ClientInstance),
 					serviceName,
 					WellKnownObjectMode.Singleton);
+
+				// give access to the rest of the GUI
+				this.schedulerGroupBox.Enabled = true;
 			}
 			catch (Exception e)
 			{
@@ -147,7 +158,10 @@ namespace Client
 					preferredServer);
 
 				// ask server about current meetings
-				this.meetingsList = obj.GetMeetings();
+				var updatedMeetings = obj.GetMeetings();
+
+				// update local meetings
+				this.meetingsList = updatedMeetings;
 			}
 			catch (RemotingException e)
 			{
@@ -177,6 +191,11 @@ namespace Client
 				{
 
 				}
+				else
+				{
+					// meeting was created successfully; add to list
+					this.meetingsList.Add(newMeeting);
+				}
 			}
 			catch (RemotingException e)
 			{
@@ -184,7 +203,7 @@ namespace Client
 			}
 		}
 
-		private void JoinMeeting(int meetingId, Slot slot)
+		private void JoinMeeting(string meetingTopic, Slot slot)
 		{
 			try
 			{
@@ -194,12 +213,51 @@ namespace Client
 					preferredServer);
 
 				// tell server you want to join
-				bool joined = obj.JoinMeeting(usernameBox.Text, meetingId, slot);
+				bool joined = obj.JoinMeeting(usernameBox.Text, meetingTopic, slot);
 
 				// TODO: throw custom error if meeting could not be joined
 				if (!joined)
 				{
 
+				}
+				else
+				{
+					// joined meeting successfully; reflect changes client-side
+					var meeting = this.meetingsList.Find(m => m.topic.Equals(meetingTopic));
+					meeting.submitVotes(this.usernameBox.Text, new List<Slot> { slot });
+				}
+			}
+			catch (RemotingException e)
+			{
+				ThrowErrorPopup(e);
+			}
+		}
+
+		private void CloseMeeting(string meetingTopic)
+		{
+
+			// TODO: if user is not meeting coordinator, throw error
+
+			try
+			{
+				// contact server
+				ServerInstance obj = (ServerInstance)Activator.GetObject(
+					typeof(ServerInstance),
+					preferredServer);
+
+				// tell server you want to close the meeting
+				bool joined = obj.CloseMeeting(usernameBox.Text, meetingTopic);
+
+				// TODO: throw custom error if meeting could not be closed
+				if (!joined)
+				{
+
+				}
+				else
+				{
+					// closed meeting successfully; reflect changes client-side
+					var meeting = this.meetingsList.Find(m => m.topic.Equals(meetingTopic));
+					meeting.closeVoting();
 				}
 			}
 			catch (RemotingException e)
@@ -253,24 +311,35 @@ namespace Client
 					int numSlots = int.Parse(commandArgs[3]);
 					int numInvitees = int.Parse(commandArgs[4]);
 					List<Slot> proposals = new List<Slot>();
-					//for (int iSlot = 5; iSlot < 5 + numSlots - 1; iSlot++)
-					//{
-
-					//	proposals.Add(new Slot(date, new Location(name, null, null)));
-					//}
-					//CreateNewMeeting(this.usernameBox.Text, topic, minAtendees, proposals, participants);
+					for (int i = 5; i < 5 + numSlots - 1; i++)
+					{
+						var currSlot = commandArgs[i].Split(',');
+						proposals.Add(new Slot(
+							currSlot[1],
+							new Location(currSlot[0], null, null)
+						));
+					}
+					List<string> participants = new List<string>();
+					for (int i = 5 + numSlots; i < commandArgs.Length; i++)
+					{
+						participants.Add(commandArgs[i]);
+					}
+					CreateNewMeeting(this.usernameBox.Text, topic, minAtendees, proposals, participants);
 					break;
 				// join meeting_topic
 				case "join":
-
+					var meetingTopic = commandArgs[1];
+					// script does not select any specific slot, so we'll take the first one available
+					var slot = this.meetingsList.Find(m => m.topic.Equals(meetingTopic)).proposals.First();
+					JoinMeeting(meetingTopic, slot);
 					break;
 				// close meeting_topic
 				case "close":
-
+					CloseMeeting(commandArgs[1]);
 					break;
 				// wait x
 				case "wait":
-
+					Thread.Sleep(int.Parse(commandArgs[1]));
 					break;
 				// if any other command is given, do nothing
 				default:
