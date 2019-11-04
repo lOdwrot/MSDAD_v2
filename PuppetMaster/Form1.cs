@@ -8,19 +8,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CommonTypes;
 
 namespace PuppetMaster
 {
     
     public partial class Form1 : Form
     {
-
-        private static string CLIENT_EXECUTABLE_PATH = "../../../WindowsFormsApp1/bin/Debug/WindowsFormsApp1.exe";
+        private Dictionary<String, ClientInstance> clients;
+        private static string CLIENT_EXECUTABLE_PATH = "../../../WindowsFormsApp1/bin/Debug/Client.exe";
         private static string SERVER_EXECUTABLE_PATH = "xxx";
         public Form1()
         {
             InitializeComponent();
-            
+            clients = new Dictionary<String, ClientInstance>();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -32,10 +33,11 @@ namespace PuppetMaster
         {
             String sId = serverId.Text;
             String sURL = serverURL.Text;
-            int sMaxFaults = Int32.Parse(serverMaxFaults.Text);
-            int sMinDelay = Int32.Parse(serverMinDelay.Text);
-            int sMaxDelay = Int32.Parse(serverMaxDelay.Text);
+            String sMaxFaults = serverMaxFaults.Text;
+            String sMinDelay = serverMinDelay.Text;
+            String sMaxDelay = serverMaxDelay.Text;
 
+            String args = sId + " " + sURL + " " + sMaxFaults + " " + sMinDelay + " " + sMaxDelay;
             try
             {
                 var process = new Process
@@ -43,20 +45,14 @@ namespace PuppetMaster
                     StartInfo = new ProcessStartInfo
                     {
                         FileName = SERVER_EXECUTABLE_PATH,
-                        Arguments = "behavior query SymlinkEvaluation",
+                        Arguments = args,
                         UseShellExecute = false,
-                        RedirectStandardOutput = true,
-                        CreateNoWindow = true
+                        RedirectStandardOutput = false,
+                        CreateNoWindow = false
                     }
                 };
 
                 process.Start();
-
-                while (!process.StandardOutput.EndOfStream)
-                {
-                    var line = process.StandardOutput.ReadLine();
-                    Console.WriteLine(line);
-                }
 
                 process.WaitForExit();
             }
@@ -69,11 +65,11 @@ namespace PuppetMaster
         private void buttonInstantiateClient_Click(object sender, EventArgs e)
         {
             String cUserName = clientUsername.Text;
+            String cClientURL = clientURL.Text;
             String cURL = clientServerURL.Text;
             String cScriptFile = clientScriptFile.Text;
-            String cClientURL = clientURL.Text;
 
-            String args = cUserName + " " + cURL + " " + cScriptFile;
+            String args = cUserName + " " + cClientURL + " " + cURL + " " + cScriptFile;
             try
             {
                 var process = new Process
@@ -90,11 +86,13 @@ namespace PuppetMaster
 
                 process.Start();
 
-                while (!process.StandardOutput.EndOfStream)
-                {
-                    var line = process.StandardOutput.ReadLine();
-                    Console.WriteLine(line);
-                }
+                clients.Add(
+                    cUserName,
+                    (ClientInstance)Activator.GetObject(
+                        typeof(ClientInstance),
+                        cClientURL
+                    )
+                );
 
                 process.WaitForExit();
             }
@@ -102,6 +100,14 @@ namespace PuppetMaster
             {
                 Console.WriteLine(err.Message);
             }
+        }
+
+        private void buttonStatus_Click(object sender, EventArgs e)
+        {
+            //foreach (ClientInstance c in clients.Values)
+            //{
+            //    IAsyncResult RemAr = RemoteDel.BeginInvoke(RemoteCallback, null);
+            //}
         }
     }
 }

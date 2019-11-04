@@ -71,34 +71,39 @@
             this.serverId.Name = "serverId";
             this.serverId.Size = new System.Drawing.Size(100, 20);
             this.serverId.TabIndex = 0;
+            this.serverId.Text = "Server1";
             // 
             // serverURL
             // 
             this.serverURL.Location = new System.Drawing.Point(188, 33);
             this.serverURL.Name = "serverURL";
-            this.serverURL.Size = new System.Drawing.Size(100, 20);
+            this.serverURL.Size = new System.Drawing.Size(220, 20);
             this.serverURL.TabIndex = 1;
+            this.serverURL.Text = "tcp://localhost:3018/ServerRemoteObj";
             // 
             // serverMaxFaults
             // 
-            this.serverMaxFaults.Location = new System.Drawing.Point(306, 34);
+            this.serverMaxFaults.Location = new System.Drawing.Point(414, 34);
             this.serverMaxFaults.Name = "serverMaxFaults";
             this.serverMaxFaults.Size = new System.Drawing.Size(100, 20);
             this.serverMaxFaults.TabIndex = 2;
+            this.serverMaxFaults.Text = "10";
             // 
             // serverMinDelay
             // 
-            this.serverMinDelay.Location = new System.Drawing.Point(420, 33);
+            this.serverMinDelay.Location = new System.Drawing.Point(528, 33);
             this.serverMinDelay.Name = "serverMinDelay";
             this.serverMinDelay.Size = new System.Drawing.Size(100, 20);
             this.serverMinDelay.TabIndex = 3;
+            this.serverMinDelay.Text = "500";
             // 
             // serverMaxDelay
             // 
-            this.serverMaxDelay.Location = new System.Drawing.Point(540, 33);
+            this.serverMaxDelay.Location = new System.Drawing.Point(648, 33);
             this.serverMaxDelay.Name = "serverMaxDelay";
             this.serverMaxDelay.Size = new System.Drawing.Size(100, 20);
             this.serverMaxDelay.TabIndex = 4;
+            this.serverMaxDelay.Text = "5000";
             // 
             // clientUsername
             // 
@@ -106,20 +111,23 @@
             this.clientUsername.Name = "clientUsername";
             this.clientUsername.Size = new System.Drawing.Size(100, 20);
             this.clientUsername.TabIndex = 5;
+            this.clientUsername.Text = "Client1";
             // 
             // clientServerURL
             // 
-            this.clientServerURL.Location = new System.Drawing.Point(306, 113);
+            this.clientServerURL.Location = new System.Drawing.Point(412, 113);
             this.clientServerURL.Name = "clientServerURL";
-            this.clientServerURL.Size = new System.Drawing.Size(100, 20);
+            this.clientServerURL.Size = new System.Drawing.Size(210, 20);
             this.clientServerURL.TabIndex = 6;
+            this.clientServerURL.Text = "tcp://localhost:3018/ServerRemoteObj";
             // 
             // clientScriptFile
             // 
-            this.clientScriptFile.Location = new System.Drawing.Point(424, 115);
+            this.clientScriptFile.Location = new System.Drawing.Point(628, 113);
             this.clientScriptFile.Name = "clientScriptFile";
-            this.clientScriptFile.Size = new System.Drawing.Size(100, 20);
+            this.clientScriptFile.Size = new System.Drawing.Size(132, 20);
             this.clientScriptFile.TabIndex = 7;
+            this.clientScriptFile.Text = "script1";
             // 
             // locationLocation
             // 
@@ -127,6 +135,7 @@
             this.locationLocation.Name = "locationLocation";
             this.locationLocation.Size = new System.Drawing.Size(100, 20);
             this.locationLocation.TabIndex = 8;
+            this.locationLocation.Text = "Lisboa";
             // 
             // locationRoom
             // 
@@ -134,6 +143,7 @@
             this.locationRoom.Name = "locationRoom";
             this.locationRoom.Size = new System.Drawing.Size(100, 20);
             this.locationRoom.TabIndex = 9;
+            this.locationRoom.Text = "A";
             // 
             // locationCapacity
             // 
@@ -141,6 +151,7 @@
             this.locationCapacity.Name = "locationCapacity";
             this.locationCapacity.Size = new System.Drawing.Size(100, 20);
             this.locationCapacity.TabIndex = 10;
+            this.locationCapacity.Text = "10";
             // 
             // buttonInstantiateServer
             // 
@@ -179,6 +190,7 @@
             this.buttonStatus.TabIndex = 14;
             this.buttonStatus.Text = "Status";
             this.buttonStatus.UseVisualStyleBackColor = true;
+            this.buttonStatus.Click += new System.EventHandler(this.buttonStatus_Click);
             // 
             // richTextBox1
             // 
@@ -209,7 +221,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(306, 12);
+            this.label3.Location = new System.Drawing.Point(414, 12);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(58, 13);
             this.label3.TabIndex = 18;
@@ -218,7 +230,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(420, 11);
+            this.label4.Location = new System.Drawing.Point(528, 11);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(54, 13);
             this.label4.TabIndex = 19;
@@ -227,7 +239,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(540, 13);
+            this.label5.Location = new System.Drawing.Point(648, 13);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(57, 13);
             this.label5.TabIndex = 20;
@@ -245,7 +257,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(306, 97);
+            this.label7.Location = new System.Drawing.Point(417, 97);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(63, 13);
             this.label7.TabIndex = 22;
@@ -254,7 +266,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(424, 97);
+            this.label8.Location = new System.Drawing.Point(625, 97);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(53, 13);
             this.label8.TabIndex = 23;
@@ -352,8 +364,9 @@
             // 
             this.clientURL.Location = new System.Drawing.Point(171, 113);
             this.clientURL.Name = "clientURL";
-            this.clientURL.Size = new System.Drawing.Size(100, 20);
+            this.clientURL.Size = new System.Drawing.Size(235, 20);
             this.clientURL.TabIndex = 34;
+            this.clientURL.Text = "tcp://localhost:3019/ClientRemoteObj";
             // 
             // Form1
             // 
