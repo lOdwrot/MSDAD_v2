@@ -67,8 +67,8 @@ namespace Client
 				// create client remote object
 				this.CreateRemoteService(port, serviceName);
 
-				// register client in server
-				this.RegisterClient(username, clientUrl);
+				//// register client in server
+				//this.RegisterClient(username, clientUrl);
 
 				// run script file
 				this.ReadScriptFile(scriptFile);
@@ -95,9 +95,23 @@ namespace Client
 
 			// create client remote object
 			this.CreateRemoteService(portBox.Text);
+		}
 
-			// register client in server
-			this.RegisterClient(usernameBox.Text, "tcp://localhost:" + portBox.Text + "/" + defaultServiceName);
+		private void debugButton_Click(object sender, EventArgs e)
+		{
+			RunNextScript();
+		}
+
+		private void button3_Click(object sender, EventArgs e)
+		{
+			CreateMeetingForm meetingPopup = new CreateMeetingForm();
+			DialogResult dialogResult = meetingPopup.ShowDialog();
+			if (dialogResult == DialogResult.OK)
+			{
+				CreateNewMeeting(this.usernameBox.Text,
+						meetingPopup.getTopic(), meetingPopup.getMinimumParticipants(),
+						meetingPopup.getProposals(), meetingPopup.getInvitedParticipants());
+			}
 		}
 
 		// Network Functions
@@ -123,24 +137,6 @@ namespace Client
 			}
 		}
 
-		private void RegisterClient(string username, string clientUrl)
-		{
-			try
-			{
-				// contact server
-				ServerInstance obj = (ServerInstance)Activator.GetObject(
-					typeof(ServerInstance),
-					preferredServer);
-
-				// tell server a new client joined
-				obj.RegisterNewClient(username, clientUrl);
-			}
-			catch (RemotingException e)
-			{
-				ThrowErrorPopup(e);
-			}
-		}
-
 		private void GetMeetingsList()
 		{
 			try
@@ -159,37 +155,32 @@ namespace Client
 			}
 		}
 
-		private void CreateNewMeeting()
+		private void CreateNewMeeting(string username, string topic, int minParticipants,
+			List<Slot> proposals, List<string> participants)
 		{
-			CreateMeetingForm meetingPopup = new CreateMeetingForm();
-			DialogResult dialogResult = meetingPopup.ShowDialog();
-			if (dialogResult == DialogResult.OK)
+			try
 			{
-				try
+				// create Meeting object from popup form fields
+				Meeting newMeeting = new Meeting(username, topic,
+					minParticipants, proposals, participants);
+
+				// contact server
+				ServerInstance obj = (ServerInstance)Activator.GetObject(
+					typeof(ServerInstance),
+					preferredServer);
+
+				// tell server to create a new meeting
+				bool created = obj.CreateMeeting(newMeeting);
+
+				// TODO: throw custom error if meeting could not be created
+				if (!created)
 				{
-					// create Meeting object from popup form fields
-					Meeting newMeeting = new Meeting(this.usernameBox.Text,
-						meetingPopup.getTopic(), meetingPopup.getMinimumParticipants(),
-						meetingPopup.getProposals(), meetingPopup.getInvitedParticipants());
 
-					// contact server
-					ServerInstance obj = (ServerInstance)Activator.GetObject(
-						typeof(ServerInstance),
-						preferredServer);
-
-					// tell server to create a new meeting
-					bool created = obj.CreateMeeting(newMeeting);
-
-					// TODO: throw custom error if meeting could not be created
-					if (!created)
-					{
-
-					}
 				}
-				catch (RemotingException e)
-				{
-					ThrowErrorPopup(e);
-				}
+			}
+			catch (RemotingException e)
+			{
+				ThrowErrorPopup(e);
 			}
 		}
 
@@ -253,11 +244,21 @@ namespace Client
 			{
 				// list
 				case "list":
-
+					GetMeetingsList();
 					break;
 				// create meeting_topic min_atendees number_of_slots number_of_invitees slot_1 ... slot_n invitee_1 ... invitee_n
 				case "create":
+					string topic = commandArgs[1];
+					int minAtendees = int.Parse(commandArgs[2]);
+					int numSlots = int.Parse(commandArgs[3]);
+					int numInvitees = int.Parse(commandArgs[4]);
+					List<Slot> proposals = new List<Slot>();
+					//for (int iSlot = 5; iSlot < 5 + numSlots - 1; iSlot++)
+					//{
 
+					//	proposals.Add(new Slot(date, new Location(name, null, null)));
+					//}
+					//CreateNewMeeting(this.usernameBox.Text, topic, minAtendees, proposals, participants);
 					break;
 				// join meeting_topic
 				case "join":
@@ -276,11 +277,6 @@ namespace Client
 					// TODO: print info to log
 					break;
 			}
-		}
-
-		private void debugButton_Click(object sender, EventArgs e)
-		{
-			RunNextScript();
 		}
 	}
 }

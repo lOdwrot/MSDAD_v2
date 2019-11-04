@@ -4,11 +4,11 @@ using System.Text;
 
 namespace CommonTypes
 {
-    public class ClientInstance
-    {
+    public class ClientInstance : IRemoteMachine
+	{
         public string getStatus()
         {
-            throw new NotImplementedException();
+			return "hello";
         }
     }
 }
