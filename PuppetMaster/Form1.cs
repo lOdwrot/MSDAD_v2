@@ -16,7 +16,7 @@ namespace PuppetMaster
     public partial class Form1 : Form
     {
         private Dictionary<String, ClientInstance> clients;
-        private static string CLIENT_EXECUTABLE_PATH = "../../../WindowsFormsApp1/bin/Debug/Client.exe";
+        
         private static string SERVER_EXECUTABLE_PATH = "xxx";
         public Form1()
         {
@@ -64,42 +64,7 @@ namespace PuppetMaster
 
         private void buttonInstantiateClient_Click(object sender, EventArgs e)
         {
-            String cUserName = clientUsername.Text;
-            String cClientURL = clientURL.Text;
-            String cURL = clientServerURL.Text;
-            String cScriptFile = clientScriptFile.Text;
-
-            String args = cUserName + " " + cClientURL + " " + cURL + " " + cScriptFile;
-            try
-            {
-                var process = new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = CLIENT_EXECUTABLE_PATH,
-                        Arguments = args,
-                        UseShellExecute = false,
-                        RedirectStandardOutput = false,
-                        CreateNoWindow = false
-                    }
-                };
-
-                process.Start();
-
-                clients.Add(
-                    cUserName,
-                    (ClientInstance)Activator.GetObject(
-                        typeof(ClientInstance),
-                        cClientURL
-                    )
-                );
-
-                process.WaitForExit();
-            }
-            catch (Exception err)
-            {
-                Console.WriteLine(err.Message);
-            }
+            instantiateClient(clientUsername.Text, clientURL.Text, clientServerURL.Text, clientScriptFile.Text);
         }
 
         private void buttonStatus_Click(object sender, EventArgs e)
@@ -108,6 +73,58 @@ namespace PuppetMaster
             //{
             //    IAsyncResult RemAr = RemoteDel.BeginInvoke(RemoteCallback, null);
             //}
+        }
+
+        private void buttonExecuteScript_Click(object sender, EventArgs e)
+        {
+            List<Command> commands = new List<Command>();
+
+            try
+            {
+                commands = new ScriptParser().parseFile(script.Text);
+            }
+            catch(System.IO.FileNotFoundException err)
+            {
+                MessageBox.Show(err.Message);
+                return;
+            }
+
+             
+
+            foreach(Command cmd in commands)
+            {
+                logs.Text += ("Exec: " + cmd.CommandName + " | " + cmd.getArgsAsString() + "\n");
+                var args = cmd.Args;
+                switch(cmd.CommandName)
+                {
+                    case "Client":
+                        instantiateClient(args[0], args[1], args[2], args[3]);
+                        break;
+                    case "Wait":
+                        System.Threading.Thread.Sleep(Int32.Parse(args[0]));
+                        break;
+                    default:
+                        logs.Text += "Command Not Implemented\n";
+                        break;
+                }
+
+            }
+        }
+
+        private void instantiateClient(String cUserName, String cClientURL, String cURL, String cScriptFile)
+        {
+            var args = cUserName + " " + cClientURL + " " + cURL + " " + cScriptFile;
+            var creationResult = new ServiceCreator().createClientInstance(args);
+            logs.Text += (creationResult + "\n");
+            if (creationResult != "OK") return;
+
+            //clients.Add(
+            //        cUserName,
+            //        (ClientInstance)Activator.GetObject(
+            //            typeof(ClientInstance),
+            //            cClientURL
+            //        )
+            //    );
         }
     }
 }

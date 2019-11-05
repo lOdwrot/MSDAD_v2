@@ -43,7 +43,7 @@
             this.buttonInstantiateClient = new System.Windows.Forms.Button();
             this.buttonAddRoom = new System.Windows.Forms.Button();
             this.buttonStatus = new System.Windows.Forms.Button();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.logs = new System.Windows.Forms.RichTextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -63,6 +63,9 @@
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.clientURL = new System.Windows.Forms.TextBox();
+            this.script = new System.Windows.Forms.TextBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.buttonExecuteScript = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // serverId
@@ -192,13 +195,13 @@
             this.buttonStatus.UseVisualStyleBackColor = true;
             this.buttonStatus.Click += new System.EventHandler(this.buttonStatus_Click);
             // 
-            // richTextBox1
+            // logs
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(62, 345);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(560, 213);
-            this.richTextBox1.TabIndex = 15;
-            this.richTextBox1.Text = "";
+            this.logs.Location = new System.Drawing.Point(62, 345);
+            this.logs.Name = "logs";
+            this.logs.Size = new System.Drawing.Size(698, 213);
+            this.logs.TabIndex = 15;
+            this.logs.Text = "";
             // 
             // label1
             // 
@@ -341,6 +344,7 @@
             this.affectedServerId.Name = "affectedServerId";
             this.affectedServerId.Size = new System.Drawing.Size(303, 20);
             this.affectedServerId.TabIndex = 31;
+            this.affectedServerId.Text = "Server1";
             // 
             // label12
             // 
@@ -368,11 +372,41 @@
             this.clientURL.TabIndex = 34;
             this.clientURL.Text = "tcp://localhost:3019/ClientRemoteObj";
             // 
+            // script
+            // 
+            this.script.Location = new System.Drawing.Point(555, 287);
+            this.script.Name = "script";
+            this.script.Size = new System.Drawing.Size(193, 20);
+            this.script.TabIndex = 35;
+            this.script.Text = "../../../Scripts/pm.txt";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(552, 269);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(59, 13);
+            this.label14.TabIndex = 36;
+            this.label14.Text = "Script Path";
+            // 
+            // buttonExecuteScript
+            // 
+            this.buttonExecuteScript.Location = new System.Drawing.Point(555, 316);
+            this.buttonExecuteScript.Name = "buttonExecuteScript";
+            this.buttonExecuteScript.Size = new System.Drawing.Size(193, 23);
+            this.buttonExecuteScript.TabIndex = 37;
+            this.buttonExecuteScript.Text = "Execute Script";
+            this.buttonExecuteScript.UseVisualStyleBackColor = true;
+            this.buttonExecuteScript.Click += new System.EventHandler(this.buttonExecuteScript_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 590);
+            this.Controls.Add(this.buttonExecuteScript);
+            this.Controls.Add(this.label14);
+            this.Controls.Add(this.script);
             this.Controls.Add(this.clientURL);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.label12);
@@ -392,7 +426,7 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.richTextBox1);
+            this.Controls.Add(this.logs);
             this.Controls.Add(this.buttonStatus);
             this.Controls.Add(this.buttonAddRoom);
             this.Controls.Add(this.buttonInstantiateClient);
@@ -433,7 +467,7 @@
         private System.Windows.Forms.Button buttonInstantiateClient;
         private System.Windows.Forms.Button buttonAddRoom;
         private System.Windows.Forms.Button buttonStatus;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox logs;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
@@ -453,6 +487,9 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox clientURL;
+        private System.Windows.Forms.TextBox script;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Button buttonExecuteScript;
     }
 }
 
