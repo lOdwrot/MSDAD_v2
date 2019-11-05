@@ -344,6 +344,7 @@
             this.affectedServerId.Name = "affectedServerId";
             this.affectedServerId.Size = new System.Drawing.Size(303, 20);
             this.affectedServerId.TabIndex = 31;
+            this.affectedServerId.Text = "Server1";
             // 
             // label12
             // 
