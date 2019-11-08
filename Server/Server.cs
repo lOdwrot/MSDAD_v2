@@ -37,9 +37,11 @@ namespace Server
 			string[] splitUrl = Regex.Split(serverUrl, "[:/]");
 			string serviceName = splitUrl[splitUrl.Length - 1];
 			int port = int.Parse(splitUrl[splitUrl.Length - 2]);
-			
-			// ----------------------------------
 
+            // ----------------------------------
+
+
+            Console.WriteLine("Registering remote object, Port|" + port + "| Remote object name|" + serviceName);
 			TcpChannel channel = new TcpChannel(port);
 			ChannelServices.RegisterChannel(channel, false);
 
