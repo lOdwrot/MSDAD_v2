@@ -52,9 +52,9 @@ namespace PuppetMaster
 
             ServerInstance s = (ServerInstance)Activator.GetObject(
                 typeof(ServerInstance),
-                "tcp://localhost:5110/Server"
+                sURL
             );
-
+            s.test();
             servers.Add(sId, s);
         }
 
