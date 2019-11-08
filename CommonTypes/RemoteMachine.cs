@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CommonTypes
 {
-	interface IRemoteMachine
+	public interface IRemoteMachine
 	{
 		string getStatus();
 	}

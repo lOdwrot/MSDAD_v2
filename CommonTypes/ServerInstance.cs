@@ -5,18 +5,37 @@ using System.Text;
 namespace CommonTypes
 {
     public class ServerInstance : MarshalByRefObject, IRemoteMachine
-	{
+    {
+        private string status = "OK";
         public string getStatus()
         {
-            throw new NotImplementedException();
+            return status;
         }
 
-		//public void RegisterNewClient(string username, string clientUrl)
-		//{
-		//	throw new NotImplementedException();
-		//}
+        public void freeze()
+        {
+            status = "HALT";
+        }
 
-		public List<Meeting> GetMeetings()
+        public void unfreeze()
+        {
+            if (status == "HALT")
+            {
+                status = "OK";
+            }
+        }
+
+        public void crash()
+        {
+            status = "CRASH";
+        }
+
+        //public void RegisterNewClient(string username, string clientUrl)
+        //{
+        //	throw new NotImplementedException();
+        //}
+
+        public List<Meeting> GetMeetings()
 		{
 			throw new NotImplementedException();
 		}

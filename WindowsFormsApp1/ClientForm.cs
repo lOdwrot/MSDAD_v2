@@ -127,11 +127,12 @@ namespace Client
 			port = port ?? defaultPort;
 			serviceName = serviceName ?? defaultServiceName;
 
-			try
-			{
+			//try
+			//{
 				// reserve port
 				TcpChannel channel = new TcpChannel(int.Parse(port));
 				ChannelServices.RegisterChannel(channel, true);
+
 
 				// register client remote object
 				RemotingConfiguration.RegisterWellKnownServiceType(
@@ -141,11 +142,11 @@ namespace Client
 
 				// give access to the rest of the GUI
 				this.schedulerGroupBox.Enabled = true;
-			}
-			catch (Exception e)
-			{
-				ThrowErrorPopup(e);
-			}
+			//}
+			//catch (Exception e)
+			//{
+			//	ThrowErrorPopup(e);
+			//}
 		}
 
 		private void GetMeetingsList()

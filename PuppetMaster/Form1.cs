@@ -5,23 +5,32 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
+using System.Runtime.Remoting.Channels.Tcp;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using CommonTypes;
 
 namespace PuppetMaster
 {
-    
     public partial class Form1 : Form
     {
+        const int PORT = 5091;
+
         private Dictionary<String, ClientInstance> clients;
-        
-        private static string SERVER_EXECUTABLE_PATH = "xxx";
+        private Dictionary<String, ServerInstance> servers;
+
+        public delegate string RemoteStatusDelegate();
         public Form1()
         {
             InitializeComponent();
             clients = new Dictionary<String, ClientInstance>();
+            servers = new Dictionary<String, ServerInstance>();
+            TcpChannel channel = new TcpChannel(PORT);
+            ChannelServices.RegisterChannel(channel, true);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -38,41 +47,56 @@ namespace PuppetMaster
             String sMaxDelay = serverMaxDelay.Text;
 
             String args = sId + " " + sURL + " " + sMaxFaults + " " + sMinDelay + " " + sMaxDelay;
-            try
-            {
-                var process = new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        FileName = SERVER_EXECUTABLE_PATH,
-                        Arguments = args,
-                        UseShellExecute = false,
-                        RedirectStandardOutput = false,
-                        CreateNoWindow = false
-                    }
-                };
+            var creationResult = new ServiceCreator().createServerInstance(args);
+            logs.Text += (creationResult + "\n");
 
-                process.Start();
+            ServerInstance s = (ServerInstance)Activator.GetObject(
+                typeof(ServerInstance),
+                "tcp://localhost:5110/Server"
+            );
 
-                process.WaitForExit();
-            }
-            catch (Exception err)
-            {
-                Console.WriteLine(err.Message);
-            }
+            servers.Add(sId, s);
         }
 
         private void buttonInstantiateClient_Click(object sender, EventArgs e)
         {
-            instantiateClient(clientUsername.Text, clientURL.Text, clientServerURL.Text, clientScriptFile.Text);
+            var args = clientUsername.Text + " " + clientURL.Text + " " + clientServerURL.Text + " " + clientScriptFile.Text;
+            var creationResult = new ServiceCreator().createClientInstance(args);
+            logs.Text += (creationResult + "\n");
+  
+            ClientInstance c = (ClientInstance)Activator.GetObject(
+                typeof(ClientInstance),
+                "tcp://localhost:3020/xxx"
+            );
+
+            clients.Add(clientUsername.Text, c);
         }
 
         private void buttonStatus_Click(object sender, EventArgs e)
         {
-            //foreach (ClientInstance c in clients.Values)
+            Console.WriteLine("Start Invoking server!!!");
+
+            foreach (String key in servers.Keys)
+            {
+                appendMessage(servers[key].getStatus());
+                //handleStatusPrint("Srever " + key, servers[key]);
+            };
+
+            //foreach (String key in clients.Keys)
             //{
-            //    IAsyncResult RemAr = RemoteDel.BeginInvoke(RemoteCallback, null);
-            //}
+            //    handleStatusPrint("Client " + key, clients[key]);
+            //};
+        }
+
+        private void handleStatusPrint(String key, IRemoteMachine machine)
+        {
+            RemoteStatusDelegate remoteDel = new RemoteStatusDelegate(machine.getStatus);
+            AsyncCallback callBack = new AsyncCallback((IAsyncResult ar) =>
+            {
+                RemoteStatusDelegate del = (RemoteStatusDelegate)((AsyncResult)ar).AsyncDelegate;
+                appendMessage("Status for machine: " + key + ": " + del.EndInvoke(ar));
+            });
+            remoteDel.BeginInvoke(callBack, null);
         }
 
         private void buttonExecuteScript_Click(object sender, EventArgs e)
@@ -111,20 +135,21 @@ namespace PuppetMaster
             }
         }
 
+        private void appendMessage(String str)
+        {
+            this.Invoke(new Action(() => logs.AppendText(str + "\r\n")));
+        }
+
         private void instantiateClient(String cUserName, String cClientURL, String cURL, String cScriptFile)
         {
-            var args = cUserName + " " + cClientURL + " " + cURL + " " + cScriptFile;
-            var creationResult = new ServiceCreator().createClientInstance(args);
-            logs.Text += (creationResult + "\n");
-            if (creationResult != "OK") return;
 
-            //clients.Add(
-            //        cUserName,
-            //        (ClientInstance)Activator.GetObject(
-            //            typeof(ClientInstance),
-            //            cClientURL
-            //        )
-            //    );
+        }
+
+        private void buttonCrashServer_Click(object sender, EventArgs e)
+        {
+            ServerInstance affectedServer = servers[affectedServerId.Text];
+            affectedServer.freeze();
+            appendMessage("Server freezed");
         }
     }
 }

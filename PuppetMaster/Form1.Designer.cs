@@ -319,6 +319,7 @@
             this.buttonCrashServer.TabIndex = 28;
             this.buttonCrashServer.Text = "Crash Server";
             this.buttonCrashServer.UseVisualStyleBackColor = true;
+            this.buttonCrashServer.Click += new System.EventHandler(this.buttonCrashServer_Click);
             // 
             // buttonFreezeServer
             // 

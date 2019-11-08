@@ -14,7 +14,7 @@ namespace Server
 	{
 		static void Main(string[] args)
 		{
-			var port = 10100;
+			var port = 5110;
 			var remoteObjectName = "Server";
 
 			TcpChannel channel = new TcpChannel(port);
