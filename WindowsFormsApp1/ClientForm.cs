@@ -131,7 +131,7 @@ namespace Client
 			{
 				// reserve port
 				TcpChannel channel = new TcpChannel(int.Parse(port));
-				ChannelServices.RegisterChannel(channel, true);
+				ChannelServices.RegisterChannel(channel, false);
 
 				// register client remote object
 				RemotingConfiguration.RegisterWellKnownServiceType(
@@ -162,6 +162,7 @@ namespace Client
 
 				// update local meetings
 				this.meetingsList = updatedMeetings;
+				this.meetingsListBox.DataSource = this.meetingsList;
 			}
 			catch (RemotingException e)
 			{
@@ -189,7 +190,7 @@ namespace Client
 				// TODO: throw custom error if meeting could not be created
 				if (!created)
 				{
-
+					ThrowErrorPopup(new MeetingNotCreatedException());
 				}
 				else
 				{
@@ -218,13 +219,13 @@ namespace Client
 				// TODO: throw custom error if meeting could not be joined
 				if (!joined)
 				{
-
+					ThrowErrorPopup(new MeetingNotJoinedException());
 				}
 				else
 				{
 					// joined meeting successfully; reflect changes client-side
 					var meeting = this.meetingsList.Find(m => m.topic.Equals(meetingTopic));
-					meeting.submitVotes(this.usernameBox.Text, new List<Slot> { slot });
+					meeting.submitVotes(this.usernameBox.Text, slot);
 				}
 			}
 			catch (RemotingException e)
@@ -246,18 +247,18 @@ namespace Client
 					preferredServer);
 
 				// tell server you want to close the meeting
-				bool joined = obj.CloseMeeting(usernameBox.Text, meetingTopic);
+				Meeting closedMeeting = obj.CloseMeeting(usernameBox.Text, meetingTopic);
 
 				// TODO: throw custom error if meeting could not be closed
-				if (!joined)
+				if (closedMeeting is null)
 				{
-
+					ThrowErrorPopup(new MeetingNotClosedException());
 				}
 				else
 				{
 					// closed meeting successfully; reflect changes client-side
-					var meeting = this.meetingsList.Find(m => m.topic.Equals(meetingTopic));
-					meeting.closeVoting();
+					var meetingIndex = this.meetingsList.FindIndex(m => m.topic.Equals(meetingTopic));
+					this.meetingsList[meetingIndex] = closedMeeting;
 				}
 			}
 			catch (RemotingException e)
@@ -316,7 +317,7 @@ namespace Client
 						var currSlot = commandArgs[i].Split(',');
 						proposals.Add(new Slot(
 							currSlot[1],
-							new Location(currSlot[0], null, null)
+							currSlot[0]
 						));
 					}
 					List<string> participants = new List<string>();

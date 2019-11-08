@@ -56,10 +56,11 @@ namespace Client
 		{
 			var date = this.dateTimePicker1.Value;
 			this.proposals.Add(new Slot(date.Year + "-" + date.Month + "-" + date.Day,
-				new Location(this.locationBox.Text, null, null))
+				this.locationBox.Text)
 			);
 
 			this.removeSlotButton.Enabled = this.slotsBox.SelectedIndex != -1;
+			this.slotsBox.DataSource = this.proposals;
 		}
 
 		private void slotsBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -71,6 +72,7 @@ namespace Client
 		{
 			this.proposals.RemoveAt(this.slotsBox.SelectedIndex);
 			this.removeSlotButton.Enabled = this.proposals.Count != 0;
+			this.slotsBox.DataSource = this.proposals;
 		}
 
 		private void participantNameBox_TextChanged(object sender, EventArgs e)
@@ -83,6 +85,7 @@ namespace Client
 			this.participants.Add(this.participantNameBox.Text);
 
 			this.removeParticipantButton.Enabled = this.participantBox.SelectedIndex != -1;
+			this.participantBox.DataSource = this.participants;
 		}
 
 		private void participantBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -94,6 +97,7 @@ namespace Client
 		{
 			this.participants.RemoveAt(this.participantBox.SelectedIndex);
 			this.removeParticipantButton.Enabled = this.participants.Count != 0;
+			this.participantBox.DataSource = this.participants;
 		}
 	}
 }

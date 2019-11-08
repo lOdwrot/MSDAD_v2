@@ -6,26 +6,55 @@ using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Server
 {
 	class Server
 	{
+		readonly List<string> serverList = new List<string> {
+			"Lisbon", "Porto", "Algarve"
+		};
+
 		static void Main(string[] args)
 		{
-			var port = 10100;
-			var remoteObjectName = "Server";
+			if (args is null || args.Length < 0)
+			{
+				System.Console.WriteLine(@"""
+					Error: please give the correct amount of parameters.
+					Server.exe <server_id> <server_url> <max_faults> <min_delay> <max_delay>"""
+				);
+				return;
+			}
+			// id, url, fults, delaymin, delaymax
+			var serverId = args[0];
+			var serverUrl = args[1];
+			var maxFaults = int.Parse(args[2]);
+			var minDelay = int.Parse(args[3]);
+			var maxDelay = int.Parse(args[4]);
+
+			string[] splitUrl = Regex.Split(serverUrl, "[:/]");
+			string serviceName = splitUrl[splitUrl.Length - 1];
+			int port = int.Parse(splitUrl[splitUrl.Length - 2]);
+			
+			// ----------------------------------
 
 			TcpChannel channel = new TcpChannel(port);
-			ChannelServices.RegisterChannel(channel, true);
+			ChannelServices.RegisterChannel(channel, false);
 
 			ServerInstance server = new ServerInstance();
-			RemotingServices.Marshal(server, remoteObjectName, typeof(ServerInstance));
-			System.Console.WriteLine("Registered server");
+			RemotingServices.Marshal(server, serviceName, typeof(ServerInstance));
 
-			System.Console.WriteLine("Chat server Lunched");
-			System.Console.WriteLine("<enter> para sair...");
+			//RemotingConfiguration.RegisterWellKnownServiceType(
+			//	typeof(ServerInstance),
+			//	serviceName,
+			//	WellKnownObjectMode.Singleton);
+
+			// ----------------------------------
+
+			System.Console.WriteLine("Server started successfully.");
+			System.Console.WriteLine("Press <Enter> to exit...");
 			System.Console.ReadLine();
 		}
 	}

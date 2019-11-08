@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CommonTypes
 {
     public enum MeetingStatus {New, Confirmed, Canceled};
-    public class Meeting
+    public class Meeting : MarshalByRefObject
     {
         public string coordinator { get; }
 		public string topic { get; }
@@ -12,8 +13,9 @@ namespace CommonTypes
 		public MeetingStatus status { get; }
 		public List<String> invited { get; }
 		public List<Slot> proposals { get; }
-		public List<Vote> votes { get; }
-		public Slot selectedSlot { get; }
+		public List<Vote> votes { get; set; }
+		public Slot selectedSlot { get; set; }
+		public Room selectedRoom { get; set; }
 
 		public Meeting(string coordinator, string topic, int minimumParticipants, List<Slot> proposals, List<String> invited)
         {
@@ -27,58 +29,69 @@ namespace CommonTypes
             this.votes = new List<Vote>();
             this.status = MeetingStatus.New;
         }
-
-		// TODO: should users only be able to vote on one slot? PDF is unclear about this
-        public void submitVotes(string voterName, List<Slot> slots)
+		
+        public void submitVotes(string voterName, Slot slot)
         {
-            foreach(Slot s in slots)
-            {
-                votes.Add(new Vote(voterName, s));
-            }
+			var userVote = votes.Where(v => v.voterName == voterName).FirstOrDefault();
+			if (userVote is null)
+			{
+				votes.Add(new Vote(voterName, new List<Slot> { slot }));
+			}
+			else
+			{
+				userVote.slots.Add(slot);
+			}
         }
 
-        public void closeVoting()
+        public bool isClosed()
         {
-            throw new NotImplementedException();
+			return this.status != MeetingStatus.New;
         }
     }
 
-    public class Slot
-    {
-        string date;
-        Location location;
+    public class Slot : MarshalByRefObject
+	{
+        public string date { get; }
+        public string location { get; }
 
-        public Slot(string date, Location location)
+        public Slot(string date, string location)
         {
             this.date = date;
             this.location = location;
         }
     }
 
-    public class Location
-    {
-        string name;
-        string room;
-        string capacity;
+    public class Room : MarshalByRefObject
+	{
+        public string name { get; }
+		public string location { get; }
+		public int capacity { get; }
+		public List<string> bookings { get; }
 
-        public Location(string name, string room, string capacity)
+		public Room(string name, string location, int capacity)
         {
             this.name = name;
-            this.room = room;
+            this.location = location;
             this.capacity = capacity;
+			this.bookings = new List<string>();
         }
 
+		public void bookDate(string date)
+		{
+			// TODO: check if it already exists
+			this.bookings.Add(date);
+		}
     }
 
-    public class Vote
-    {
-        string voterName;
-        Slot slot;
+    public class Vote : MarshalByRefObject
+	{
+        public string voterName { get; }
+        public List<Slot> slots { get; }
 
-        public Vote(string voterName, Slot slot)
+        public Vote(string voterName, List<Slot> slots)
         {
             this.voterName = voterName;
-            this.slot = slot;
+            this.slots = slots;
         }
     }
 }
