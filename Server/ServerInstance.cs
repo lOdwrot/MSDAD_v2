@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using CommonTypes;
 
-namespace CommonTypes
+namespace Server
 {
-    public class ServerInstance : MarshalByRefObject, IRemoteMachine
+    public class ServerInstance : MarshalByRefObject, IServer
 	{
 		List<Meeting> meetings;
 		List<Room> defaultRooms;

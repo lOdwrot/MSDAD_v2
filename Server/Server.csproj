@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Server.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerInstance.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

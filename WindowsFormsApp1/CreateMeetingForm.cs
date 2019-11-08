@@ -22,6 +22,7 @@ namespace Client
 
 			this.proposals = new List<Slot>();
 			this.slotsBox.DataSource = this.proposals;
+			this.slotsBox.DisplayMember = "date";
 
 			this.participants = new List<string>();
 			this.participantBox.DataSource = this.participants;
@@ -60,7 +61,7 @@ namespace Client
 			);
 
 			this.removeSlotButton.Enabled = this.slotsBox.SelectedIndex != -1;
-			this.slotsBox.DataSource = this.proposals;
+			//this.slotsBox.Update();
 		}
 
 		private void slotsBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -72,12 +73,12 @@ namespace Client
 		{
 			this.proposals.RemoveAt(this.slotsBox.SelectedIndex);
 			this.removeSlotButton.Enabled = this.proposals.Count != 0;
-			this.slotsBox.DataSource = this.proposals;
+			//this.slotsBox.Update();
 		}
 
 		private void participantNameBox_TextChanged(object sender, EventArgs e)
 		{
-			this.addParticipantButton.Enabled = this.participantBox.Text.Length > 0;
+			this.addParticipantButton.Enabled = this.participantNameBox.Text.Length > 0;
 		}
 
 		private void addParticipantButton_Click(object sender, EventArgs e)
@@ -85,7 +86,7 @@ namespace Client
 			this.participants.Add(this.participantNameBox.Text);
 
 			this.removeParticipantButton.Enabled = this.participantBox.SelectedIndex != -1;
-			this.participantBox.DataSource = this.participants;
+			//this.participantBox.Update();
 		}
 
 		private void participantBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -97,7 +98,7 @@ namespace Client
 		{
 			this.participants.RemoveAt(this.participantBox.SelectedIndex);
 			this.removeParticipantButton.Enabled = this.participants.Count != 0;
-			this.participantBox.DataSource = this.participants;
+			//this.participantBox.Update();
 		}
 	}
 }

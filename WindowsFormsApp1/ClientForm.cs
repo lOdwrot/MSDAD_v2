@@ -154,8 +154,8 @@ namespace Client
 			try
 			{
 				// contact server
-				ServerInstance obj = (ServerInstance)Activator.GetObject(
-					typeof(ServerInstance),
+				IServer obj = (IServer)Activator.GetObject(
+					typeof(IServer),
 					preferredServer);
 
 				// ask server about current meetings
@@ -181,8 +181,8 @@ namespace Client
 					minParticipants, proposals, participants);
 
 				// contact server
-				ServerInstance obj = (ServerInstance)Activator.GetObject(
-					typeof(ServerInstance),
+				IServer obj = (IServer)Activator.GetObject(
+					typeof(IServer),
 					preferredServer);
 
 				// tell server to create a new meeting
@@ -210,8 +210,8 @@ namespace Client
 			try
 			{
 				// contact server
-				ServerInstance obj = (ServerInstance)Activator.GetObject(
-					typeof(ServerInstance),
+				IServer obj = (IServer)Activator.GetObject(
+					typeof(IServer),
 					preferredServer);
 
 				// tell server you want to join
@@ -243,8 +243,8 @@ namespace Client
 			try
 			{
 				// contact server
-				ServerInstance obj = (ServerInstance)Activator.GetObject(
-					typeof(ServerInstance),
+				IServer obj = (IServer)Activator.GetObject(
+					typeof(IServer),
 					preferredServer);
 
 				// tell server you want to close the meeting
