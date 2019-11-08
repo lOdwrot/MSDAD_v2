@@ -33,9 +33,6 @@ namespace Client
 			// initialize form
 			InitializeComponent();
 
-			// bind meetings to GUI list
-			this.meetingsListBox.DataSource = this.meetingsList;
-
 			// read config file
 			var appSettings = ConfigurationManager.AppSettings;
 			this.defaultPort = appSettings["defaultPort"];
@@ -131,7 +128,7 @@ namespace Client
 			//{
 				// reserve port
 				TcpChannel channel = new TcpChannel(int.Parse(port));
-				ChannelServices.RegisterChannel(channel, false);
+				ChannelServices.RegisterChannel(channel, true);
 
 
 				// register client remote object
@@ -162,8 +159,7 @@ namespace Client
 				var updatedMeetings = obj.GetMeetings();
 
 				// update local meetings
-				this.meetingsList = updatedMeetings;
-				this.meetingsListBox.DataSource = this.meetingsList;
+				UpdateListBox(this.meetingsListBox, this.meetingsList);
 			}
 			catch (RemotingException e)
 			{
@@ -197,6 +193,9 @@ namespace Client
 				{
 					// meeting was created successfully; add to list
 					this.meetingsList.Add(newMeeting);
+
+					// update local meetings
+					UpdateListBox(this.meetingsListBox, this.meetingsList);
 				}
 			}
 			catch (RemotingException e)
@@ -227,6 +226,9 @@ namespace Client
 					// joined meeting successfully; reflect changes client-side
 					var meeting = this.meetingsList.Find(m => m.topic.Equals(meetingTopic));
 					meeting.submitVotes(this.usernameBox.Text, slot);
+
+					// update local meetings
+					UpdateListBox(this.meetingsListBox, this.meetingsList);
 				}
 			}
 			catch (RemotingException e)
@@ -260,6 +262,9 @@ namespace Client
 					// closed meeting successfully; reflect changes client-side
 					var meetingIndex = this.meetingsList.FindIndex(m => m.topic.Equals(meetingTopic));
 					this.meetingsList[meetingIndex] = closedMeeting;
+
+					// update local meetings
+					UpdateListBox(this.meetingsListBox, this.meetingsList);
 				}
 			}
 			catch (RemotingException e)
@@ -269,6 +274,15 @@ namespace Client
 		}
 
 		// Misc. Functions
+
+		public static void UpdateListBox<T>(ListBox listBox, List<T> list)
+		{
+			listBox.Items.Clear();
+			foreach (var item in list)
+			{
+				listBox.Items.Add(item);
+			}
+		}
 
 		private void ThrowErrorPopup(Exception e)
 		{
@@ -287,9 +301,11 @@ namespace Client
 			{
 				this.scriptCommands = new List<string>(File.ReadAllLines(fileName));
 			}
-			catch (FileNotFoundException e)
+			catch (Exception e)
 			{
-				ThrowErrorPopup(e);
+				// if file does not exist, then just simply run the client as-is
+				// no need to throw error
+				// ThrowErrorPopup(e);
 			}
 		}
 

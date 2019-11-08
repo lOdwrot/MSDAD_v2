@@ -51,7 +51,7 @@
 			this.removeParticipantButton = new System.Windows.Forms.Button();
 			this.label10 = new System.Windows.Forms.Label();
 			this.participantBox = new System.Windows.Forms.ListBox();
-			this.button5 = new System.Windows.Forms.Button();
+			this.createMeetingButton = new System.Windows.Forms.Button();
 			this.button6 = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.participantNumberBox)).BeginInit();
 			this.tabControl1.SuspendLayout();
@@ -285,16 +285,16 @@
 			this.participantBox.TabIndex = 10;
 			this.participantBox.SelectedIndexChanged += new System.EventHandler(this.participantBox_SelectedIndexChanged);
 			// 
-			// button5
+			// createMeetingButton
 			// 
-			this.button5.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.button5.Enabled = false;
-			this.button5.Location = new System.Drawing.Point(262, 288);
-			this.button5.Name = "button5";
-			this.button5.Size = new System.Drawing.Size(98, 23);
-			this.button5.TabIndex = 5;
-			this.button5.Text = "Create Meeting";
-			this.button5.UseVisualStyleBackColor = true;
+			this.createMeetingButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.createMeetingButton.Enabled = false;
+			this.createMeetingButton.Location = new System.Drawing.Point(262, 288);
+			this.createMeetingButton.Name = "createMeetingButton";
+			this.createMeetingButton.Size = new System.Drawing.Size(98, 23);
+			this.createMeetingButton.TabIndex = 5;
+			this.createMeetingButton.Text = "Create Meeting";
+			this.createMeetingButton.UseVisualStyleBackColor = true;
 			// 
 			// button6
 			// 
@@ -312,7 +312,7 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(441, 321);
 			this.Controls.Add(this.button6);
-			this.Controls.Add(this.button5);
+			this.Controls.Add(this.createMeetingButton);
 			this.Controls.Add(this.tabControl1);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.participantNumberBox);
@@ -356,7 +356,7 @@
 		private System.Windows.Forms.Button removeParticipantButton;
 		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.ListBox participantBox;
-		private System.Windows.Forms.Button button5;
+		private System.Windows.Forms.Button createMeetingButton;
 		private System.Windows.Forms.Button button6;
 		private System.Windows.Forms.TextBox locationBox;
 	}

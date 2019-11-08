@@ -43,7 +43,7 @@ namespace Server
 
             Console.WriteLine("Registering remote object, Port|" + port + "| Remote object name|" + serviceName);
 			TcpChannel channel = new TcpChannel(port);
-			ChannelServices.RegisterChannel(channel, false);
+			ChannelServices.RegisterChannel(channel, true);
 
 			ServerInstance server = new ServerInstance();
 
