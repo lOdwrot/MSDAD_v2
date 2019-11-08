@@ -78,14 +78,13 @@ namespace PuppetMaster
 
             foreach (String key in servers.Keys)
             {
-                appendMessage(servers[key].getStatus());
-                //handleStatusPrint("Srever " + key, servers[key]);
+                handleStatusPrint("Srever " + key, servers[key]);
             };
 
-            //foreach (String key in clients.Keys)
-            //{
-            //    handleStatusPrint("Client " + key, clients[key]);
-            //};
+            foreach (String key in clients.Keys)
+            {
+                handleStatusPrint("Client " + key, clients[key]);
+            };
         }
 
         private void handleStatusPrint(String key, IRemoteMachine machine)
