@@ -4,8 +4,8 @@ using System.Text;
 
 namespace CommonTypes
 {
-    public class ServerInstance : IRemoteMachine
-    {
+    public class ServerInstance : MarshalByRefObject, IRemoteMachine
+	{
         public string getStatus()
         {
             throw new NotImplementedException();
