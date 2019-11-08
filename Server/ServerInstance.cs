@@ -30,7 +30,7 @@ namespace Server
 
         public void test()
         {
-            Console.WriteLine("Hello");
+            Console.WriteLine("Server Runing | executed remotely");
         }
 
         public string getStatus()

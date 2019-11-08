@@ -5,7 +5,7 @@ using System.Text;
 namespace CommonTypes
 {
     public class ClientInstance : MarshalByRefObject, IRemoteMachine
-	{
+    {
         public string getStatus()
         {
 			return "hello";

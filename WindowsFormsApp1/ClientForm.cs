@@ -23,8 +23,9 @@ namespace Client
 		private string defaultPort = "";
 		private string defaultServiceName = "";
 		private string preferredServer = "";
+        private ClientInstance client;
 
-		private List<string> scriptCommands;
+        private List<string> scriptCommands;
 
 		private List<Meeting> meetingsList = new List<Meeting>();
 		
@@ -69,7 +70,7 @@ namespace Client
 				this.CreateRemoteService(port, serviceName);
 
 				// run script file
-				this.ReadScriptFile(scriptFile);
+				//this.ReadScriptFile(scriptFile);
 			}
 		}
 
@@ -124,29 +125,14 @@ namespace Client
 			port = port ?? defaultPort;
 			serviceName = serviceName ?? defaultServiceName;
 
-			//try
-			//{
-				// reserve port
-				TcpChannel channel = new TcpChannel(int.Parse(port));
-				ChannelServices.RegisterChannel(channel, true);
+            TcpChannel channel = new TcpChannel(int.Parse(port));
+            ChannelServices.RegisterChannel(channel, true);
 
+            client = new ClientInstance();
+            RemotingServices.Marshal(client, serviceName, typeof(ClientInstance));
+        }
 
-				// register client remote object
-				RemotingConfiguration.RegisterWellKnownServiceType(
-					typeof(ClientInstance),
-					serviceName,
-					WellKnownObjectMode.Singleton);
-
-				// give access to the rest of the GUI
-				this.schedulerGroupBox.Enabled = true;
-			//}
-			//catch (Exception e)
-			//{
-			//	ThrowErrorPopup(e);
-			//}
-		}
-
-		private void GetMeetingsList()
+        private void GetMeetingsList()
 		{
 			try
 			{
