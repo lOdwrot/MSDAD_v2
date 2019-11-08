@@ -21,16 +21,16 @@ namespace PuppetMaster
         const int PORT = 5091;
 
         private Dictionary<String, ClientInstance> clients;
-        private Dictionary<String, ServerInstance> servers;
+        private Dictionary<String, IServer> servers;
 
         public delegate string RemoteStatusDelegate();
         public Form1()
         {
             InitializeComponent();
             clients = new Dictionary<String, ClientInstance>();
-            servers = new Dictionary<String, ServerInstance>();
+            servers = new Dictionary<String, IServer>();
             TcpChannel channel = new TcpChannel(PORT);
-            ChannelServices.RegisterChannel(channel, true);
+            ChannelServices.RegisterChannel(channel, false);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -50,8 +50,8 @@ namespace PuppetMaster
             var creationResult = new ServiceCreator().createServerInstance(args);
             logs.Text += (creationResult + "\n");
 
-            ServerInstance s = (ServerInstance)Activator.GetObject(
-                typeof(ServerInstance),
+            IServer s = (IServer)Activator.GetObject(
+                typeof(IServer),
                 sURL
             );
             s.test();
@@ -146,7 +146,7 @@ namespace PuppetMaster
 
         private void buttonCrashServer_Click(object sender, EventArgs e)
         {
-            ServerInstance affectedServer = servers[affectedServerId.Text];
+            IServer affectedServer = servers[affectedServerId.Text];
             affectedServer.freeze();
             appendMessage("Server freezed");
         }

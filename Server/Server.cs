@@ -46,6 +46,7 @@ namespace Server
 			ChannelServices.RegisterChannel(channel, true);
 
 			ServerInstance server = new ServerInstance();
+
 			RemotingServices.Marshal(server, serviceName, typeof(ServerInstance));
 
 			//RemotingConfiguration.RegisterWellKnownServiceType(
