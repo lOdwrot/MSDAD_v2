@@ -30,7 +30,7 @@ namespace PuppetMaster
             clients = new Dictionary<String, ClientInstance>();
             servers = new Dictionary<String, IServer>();
             TcpChannel channel = new TcpChannel(PORT);
-            ChannelServices.RegisterChannel(channel, false);
+            ChannelServices.RegisterChannel(channel, true);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -66,8 +66,9 @@ namespace PuppetMaster
   
             ClientInstance c = (ClientInstance)Activator.GetObject(
                 typeof(ClientInstance),
-                "tcp://localhost:3020/xxx"
+                clientURL.Text
             );
+            c.getStatus();
 
             clients.Add(clientUsername.Text, c);
         }
