@@ -66,9 +66,8 @@ namespace PuppetMaster
   
             ClientInstance c = (ClientInstance)Activator.GetObject(
                 typeof(ClientInstance),
-                clientURL.Text
-            );
-            c.getStatus();
+				clientURL.Text
+			);
 
             clients.Add(clientUsername.Text, c);
         }

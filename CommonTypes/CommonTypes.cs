@@ -47,6 +47,11 @@ namespace CommonTypes
         {
 			return this.status != MeetingStatus.New;
         }
+
+		public override string ToString()
+		{
+			return coordinator + " - " + topic;
+		}
     }
 
     public class Slot : MarshalByRefObject
@@ -58,8 +63,12 @@ namespace CommonTypes
         {
             this.date = date;
             this.location = location;
-        }
-    }
+		}
+		public override string ToString()
+		{
+			return location + "," + date;
+		}
+	}
 
     public class Room : MarshalByRefObject
 	{
