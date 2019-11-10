@@ -124,6 +124,9 @@ namespace PuppetMaster
                     case "Client":
                         instantiateClient(args[0], args[1], args[2], args[3]);
                         break;
+                    case "Server":
+                        instantiateClient(args[0], args[1], args[2], args[3]);
+                        break;
                     case "Wait":
                         System.Threading.Thread.Sleep(Int32.Parse(args[0]));
                         break;
@@ -141,6 +144,11 @@ namespace PuppetMaster
         }
 
         private void instantiateClient(String cUserName, String cClientURL, String cURL, String cScriptFile)
+        {
+
+        }
+
+        private void instantiateServer(String cUserName, String cClientURL, String cURL, String cScriptFile)
         {
 
         }
