@@ -56,8 +56,11 @@ namespace PuppetMaster
 
         private void buttonStatus_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("Start Invoking server!!!");
+            showStatus();
+        }
 
+        private void showStatus()
+        {
             foreach (String key in servers.Keys)
             {
                 handleStatusPrint("Srever " + key, servers[key]);
@@ -116,6 +119,9 @@ namespace PuppetMaster
                         {
                             s.AddRoom(args[0], args[2], Int32.Parse(args[1]));
                         }
+                        break;
+                    case "Status":
+                        //showStatus();
                         break;
                     default:
                         appendMessage("Command Not Implemented" + cmd.CommandName + "\n");
