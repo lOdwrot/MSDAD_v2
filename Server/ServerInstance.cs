@@ -80,7 +80,9 @@ namespace Server
 
 		public bool JoinMeeting(string username, string meetingTopic, Slot slotPicked)
 		{
-			var meeting = this.meetings.Where(m => m.topic == meetingTopic).FirstOrDefault();
+			var meeting = this.meetings
+				.Where(m => m.topic == meetingTopic)
+				.FirstOrDefault();
 			var userVote = meeting.votes.Where(v => v.voterName == username).FirstOrDefault();
 			var alreadyVoted = userVote != null && userVote.slots.Contains(slotPicked);
 			if (!alreadyVoted)
