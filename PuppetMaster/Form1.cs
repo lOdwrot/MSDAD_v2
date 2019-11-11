@@ -46,30 +46,12 @@ namespace PuppetMaster
             String sMinDelay = serverMinDelay.Text;
             String sMaxDelay = serverMaxDelay.Text;
 
-            String args = sId + " " + sURL + " " + sMaxFaults + " " + sMinDelay + " " + sMaxDelay;
-            var creationResult = new ServiceCreator().createServerInstance(args);
-            logs.Text += (creationResult + "\n");
-
-            IServer s = (IServer)Activator.GetObject(
-                typeof(IServer),
-                sURL
-            );
-            s.test();
-            servers.Add(sId, s);
+            instantiateServer(sId, sURL, sMaxFaults, sMinDelay, sMaxDelay);
         }
 
         private void buttonInstantiateClient_Click(object sender, EventArgs e)
         {
-            var args = clientUsername.Text + " " + clientURL.Text + " " + clientServerURL.Text + " " + clientScriptFile.Text;
-            var creationResult = new ServiceCreator().createClientInstance(args);
-            logs.Text += (creationResult + "\n");
-  
-            ClientInstance c = (ClientInstance)Activator.GetObject(
-                typeof(ClientInstance),
-				clientURL.Text
-			);
-
-            clients.Add(clientUsername.Text, c);
+            instantiateClient(clientUsername.Text, clientURL.Text, clientServerURL.Text, clientScriptFile.Text);
         }
 
         private void buttonStatus_Click(object sender, EventArgs e)
@@ -124,7 +106,7 @@ namespace PuppetMaster
                         instantiateClient(args[0], args[1], args[2], args[3]);
                         break;
                     case "Server":
-                        instantiateClient(args[0], args[1], args[2], args[3]);
+                        instantiateServer(args[0], args[1], args[2], args[3], args[4]);
                         break;
                     case "Wait":
                         System.Threading.Thread.Sleep(Int32.Parse(args[0]));
@@ -144,12 +126,29 @@ namespace PuppetMaster
 
         private void instantiateClient(String cUserName, String cClientURL, String cURL, String cScriptFile)
         {
+            var args = cUserName + " " + cClientURL + " " + cURL + " " + cScriptFile;
+            var creationResult = new ServiceCreator().createClientInstance(args);
+            logs.Text += (creationResult + "\n");
 
+            ClientInstance c = (ClientInstance)Activator.GetObject(
+                typeof(ClientInstance),
+                clientURL.Text
+            );
+
+            clients.Add(clientUsername.Text, c);
         }
 
-        private void instantiateServer(String cUserName, String cClientURL, String cURL, String cScriptFile)
+        private void instantiateServer(String sId, String sURL, String sMaxFaults, String sMinDelay, String sMaxDelay)
         {
+            String args = sId + " " + sURL + " " + sMaxFaults + " " + sMinDelay + " " + sMaxDelay;
+            var creationResult = new ServiceCreator().createServerInstance(args);
+            logs.Text += (creationResult + "\n");
 
+            IServer s = (IServer)Activator.GetObject(
+                typeof(IServer),
+                sURL
+            );
+            servers.Add(sId, s);
         }
 
         private void buttonCrashServer_Click(object sender, EventArgs e)
@@ -157,6 +156,26 @@ namespace PuppetMaster
             IServer affectedServer = servers[affectedServerId.Text];
             affectedServer.freeze();
             appendMessage("Server freezed");
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            IServer server = (IServer)servers["Server1"];
+            server.testAsync("Hello", new TestStringDelegate(CompleteCall));
+            //TestRemoteDelegate remoteDelegate = new TestRemoteDelegate(server.testAsync);
+            //AsyncCallback callback = new AsyncCallback(CompleteCall);
+            //remoteDelegate.BeginInvoke("Client Message", callback, null);
+
+        }
+
+        private void CompleteCall(string result)
+        {
+            appendMessage(result);
+            //AsyncResult result = (AsyncResult)ar;
+            //TestRemoteDelegate del = (TestRemoteDelegate)result.AsyncDelegate;
+            //String retrivedMessage = del.EndInvoke(ar);
+            //appendMessage(retrivedMessage);
         }
     }
 }

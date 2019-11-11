@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using CommonTypes;
+using System.Threading;
 
 namespace Server
 {
@@ -31,6 +32,17 @@ namespace Server
         public void test()
         {
             Console.WriteLine("Server Runing | executed remotely");
+        }
+
+        public void testAsync(string param, TestStringDelegate callback)
+        {
+            Thread t = new Thread(() =>
+            {
+                Console.WriteLine("Test Async Function");
+                callback("Hello async " + param);
+            });
+            t.Start();
+            t.Join();
         }
 
         public string getStatus()
@@ -132,5 +144,6 @@ namespace Server
 			}
 			return null;
 		}
-	}
+
+    }
 }
