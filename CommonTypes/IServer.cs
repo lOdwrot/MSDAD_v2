@@ -26,5 +26,8 @@ namespace CommonTypes
 		bool JoinMeeting(string username, string meetingTopic, Slot slotPicked);
 
 		Meeting CloseMeeting(string username, string meetingTopic);
+
+        void AddRoom(String location, String roomName, int capacity);
+
 	}
 }

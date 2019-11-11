@@ -111,6 +111,12 @@ namespace PuppetMaster
                     case "Wait":
                         System.Threading.Thread.Sleep(Int32.Parse(args[0]));
                         break;
+                    case "AddRoom":
+                        foreach (IServer s in servers.Values)
+                        {
+                            s.AddRoom(args[0], args[2], Int32.Parse(args[1]));
+                        }
+                        break;
                     default:
                         appendMessage("Command Not Implemented" + cmd.CommandName + "\n");
                         break;
@@ -135,7 +141,7 @@ namespace PuppetMaster
                 clientURL.Text
             );
 
-            clients.Add(clientUsername.Text, c);
+            clients.Add(cUserName, c);
         }
 
         private void instantiateServer(String sId, String sURL, String sMaxFaults, String sMinDelay, String sMaxDelay)

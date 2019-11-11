@@ -380,7 +380,7 @@
             this.script.Name = "script";
             this.script.Size = new System.Drawing.Size(193, 20);
             this.script.TabIndex = 35;
-            this.script.Text = "../../../Scripts/pm.txt";
+            this.script.Text = "../../../Scripts/pms1-sa.txt";
             // 
             // label14
             // 

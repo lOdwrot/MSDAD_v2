@@ -69,9 +69,9 @@ namespace Client
 				// create client remote object
 				this.CreateRemoteService(port, serviceName);
 
-				// run script file
-				//this.ReadScriptFile(scriptFile);
-			}
+                // run script file
+                this.ReadScriptFile(scriptFile);
+            }
 		}
 
 		// Form Event Handlers

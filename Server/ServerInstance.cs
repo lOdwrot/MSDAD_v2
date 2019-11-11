@@ -140,5 +140,9 @@ namespace Server
 			return null;
 		}
 
+        public void AddRoom(string location, string roomName, int capacity)
+        {
+            defaultRooms.Add(new Room(location, roomName, 10));
+        }
     }
 }
