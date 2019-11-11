@@ -34,15 +34,10 @@ namespace Server
             Console.WriteLine("Server Runing | executed remotely");
         }
 
-        public void testAsync(string param, TestStringDelegate callback)
+        public string testAsync(string param)
         {
-            Thread t = new Thread(() =>
-            {
-                Console.WriteLine("Test Async Function");
-                callback("Hello async " + param);
-            });
-            t.Start();
-            t.Join();
+            Console.WriteLine("Test Async Function");
+            return "Hello async " + param;
         }
 
         public string getStatus()

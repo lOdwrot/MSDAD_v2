@@ -112,7 +112,7 @@ namespace PuppetMaster
                         System.Threading.Thread.Sleep(Int32.Parse(args[0]));
                         break;
                     default:
-                        logs.Text += "Command Not Implemented\n";
+                        appendMessage("Command Not Implemented" + cmd.CommandName + "\n");
                         break;
                 }
 
@@ -162,20 +162,17 @@ namespace PuppetMaster
         {
 
             IServer server = (IServer)servers["Server1"];
-            server.testAsync("Hello", new TestStringDelegate(CompleteCall));
-            //TestRemoteDelegate remoteDelegate = new TestRemoteDelegate(server.testAsync);
-            //AsyncCallback callback = new AsyncCallback(CompleteCall);
-            //remoteDelegate.BeginInvoke("Client Message", callback, null);
-
+            TestRemoteDelegate remoteDelegate = new TestRemoteDelegate(server.testAsync);
+            AsyncCallback callback = new AsyncCallback(CompleteCall);
+            remoteDelegate.BeginInvoke("Client Message", callback, null);
         }
 
-        private void CompleteCall(string result)
+        private void CompleteCall(IAsyncResult ar)
         {
-            appendMessage(result);
-            //AsyncResult result = (AsyncResult)ar;
-            //TestRemoteDelegate del = (TestRemoteDelegate)result.AsyncDelegate;
-            //String retrivedMessage = del.EndInvoke(ar);
-            //appendMessage(retrivedMessage);
+            AsyncResult result = (AsyncResult)ar;
+            TestRemoteDelegate del = (TestRemoteDelegate)result.AsyncDelegate;
+            String retrivedMessage = del.EndInvoke(ar);
+            appendMessage(retrivedMessage);
         }
     }
 }

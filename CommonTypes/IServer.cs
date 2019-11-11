@@ -9,7 +9,7 @@ namespace CommonTypes
 	{
 		void test();
 
-        void testAsync(string param, TestStringDelegate callback);
+        string testAsync(string param);
 
         void freeze();
 
