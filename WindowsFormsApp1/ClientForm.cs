@@ -288,6 +288,8 @@ namespace Client
 			try
 			{
 				this.scriptCommands = new List<string>(File.ReadAllLines(fileName));
+				this.debugButton.Enabled = true;
+				this.debugLabel.Text = this.scriptCommands[0];
 			}
 			catch (Exception e)
 			{
@@ -352,6 +354,7 @@ namespace Client
 					// TODO: print info to log
 					break;
 			}
+			this.debugLabel.Text = command;
 		}
 	}
 }
