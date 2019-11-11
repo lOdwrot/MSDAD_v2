@@ -5,7 +5,8 @@ using System.Linq;
 namespace CommonTypes
 {
     public enum MeetingStatus {New, Confirmed, Canceled};
-    public class Meeting : MarshalByRefObject
+	[Serializable]
+	public class Meeting
     {
         public string coordinator { get; }
 		public string topic { get; }
@@ -54,7 +55,8 @@ namespace CommonTypes
 		}
     }
 
-    public class Slot : MarshalByRefObject
+	[Serializable]
+    public class Slot
 	{
         public string date { get; }
         public string location { get; }
@@ -70,7 +72,8 @@ namespace CommonTypes
 		}
 	}
 
-    public class Room : MarshalByRefObject
+	[Serializable]
+	public class Room
 	{
         public string name { get; }
 		public string location { get; }
@@ -92,7 +95,8 @@ namespace CommonTypes
 		}
     }
 
-    public class Vote : MarshalByRefObject
+	[Serializable]
+	public class Vote
 	{
         public string voterName { get; }
         public List<Slot> slots { get; }

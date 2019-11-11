@@ -40,6 +40,7 @@
 			this.debugLabel = new System.Windows.Forms.Label();
 			this.schedulerGroupBox = new System.Windows.Forms.GroupBox();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+			this.refreshList = new System.Windows.Forms.Button();
 			this.button3 = new System.Windows.Forms.Button();
 			this.meetingsListLabel = new System.Windows.Forms.Label();
 			this.meetingsListBox = new System.Windows.Forms.ListBox();
@@ -53,7 +54,6 @@
 			this.button4 = new System.Windows.Forms.Button();
 			this.slotListLabel = new System.Windows.Forms.Label();
 			this.slotListBox = new System.Windows.Forms.ListBox();
-			this.refreshList = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.portBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -258,6 +258,18 @@
 			this.splitContainer2.SplitterDistance = 247;
 			this.splitContainer2.TabIndex = 0;
 			// 
+			// refreshList
+			// 
+			this.refreshList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.refreshList.Location = new System.Drawing.Point(169, 6);
+			this.refreshList.Name = "refreshList";
+			this.refreshList.Size = new System.Drawing.Size(75, 23);
+			this.refreshList.TabIndex = 4;
+			this.refreshList.Text = "Refresh List";
+			this.refreshList.UseVisualStyleBackColor = true;
+			this.refreshList.Click += new System.EventHandler(this.refreshList_Click);
+			// 
 			// button3
 			// 
 			this.button3.Location = new System.Drawing.Point(67, 295);
@@ -287,6 +299,7 @@
 			this.meetingsListBox.Name = "meetingsListBox";
 			this.meetingsListBox.Size = new System.Drawing.Size(241, 251);
 			this.meetingsListBox.TabIndex = 0;
+			this.meetingsListBox.SelectedIndexChanged += new System.EventHandler(this.meetingsListBox_SelectedIndexChanged);
 			// 
 			// participantsValueLabel
 			// 
@@ -382,18 +395,6 @@
 			this.slotListBox.Name = "slotListBox";
 			this.slotListBox.Size = new System.Drawing.Size(237, 147);
 			this.slotListBox.TabIndex = 1;
-			// 
-			// refreshList
-			// 
-			this.refreshList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.refreshList.Location = new System.Drawing.Point(169, 6);
-			this.refreshList.Name = "refreshList";
-			this.refreshList.Size = new System.Drawing.Size(75, 23);
-			this.refreshList.TabIndex = 4;
-			this.refreshList.Text = "Refresh List";
-			this.refreshList.UseVisualStyleBackColor = true;
-			this.refreshList.Click += new System.EventHandler(this.refreshList_Click);
 			// 
 			// ClientForm
 			// 

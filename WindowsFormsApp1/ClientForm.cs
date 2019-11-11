@@ -20,6 +20,8 @@ namespace Client
 {
 	public partial class ClientForm : Form
 	{
+		private readonly string emptyFieldText = "----------------";
+
 		private string defaultPort = "";
 		private string defaultServiceName = "";
 		private string preferredServer = "";
@@ -118,6 +120,19 @@ namespace Client
 			GetMeetingsList();
 		}
 
+		private void meetingsListBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			var meeting = this.meetingsList[this.meetingsListBox.SelectedIndex];
+			this.splitContainer2.Panel2.Enabled = true;
+			this.topicValueLabel.Text = meeting.topic;
+			this.coordinatorValueLabel.Text = meeting.coordinator;
+			this.participantsValueLabel.Text = meeting.minimumParticipants.ToString();
+
+			this.slotListBox.DataSource = null;
+			this.slotListBox.DataSource = meeting.proposals;
+			
+		}
+
 		// Network Functions
 
 		private void CreateRemoteService(string port = null, string serviceName = null)
@@ -145,6 +160,9 @@ namespace Client
 
 				// ask server about current meetings
 				var updatedMeetings = obj.GetMeetings();
+
+				// add meetings to client meeting
+				this.meetingsList = updatedMeetings;
 
 				// update local meetings
 				UpdateListBox(this.meetingsListBox, this.meetingsList);
@@ -354,7 +372,16 @@ namespace Client
 					// TODO: print info to log
 					break;
 			}
-			this.debugLabel.Text = command;
+			if (this.scriptCommands.Count == 0)
+			{
+				this.debugLabel.Text = emptyFieldText;
+				this.debugButton.Enabled = false;
+			}
+			else
+			{
+				this.debugLabel.Text = this.scriptCommands[0];
+			}
+			
 		}
 	}
 }
