@@ -130,6 +130,8 @@ namespace Client
 
             client = new ClientInstance();
             RemotingServices.Marshal(client, serviceName, typeof(ClientInstance));
+
+			this.schedulerGroupBox.Enabled = true;
         }
 
         private void GetMeetingsList()
@@ -147,7 +149,7 @@ namespace Client
 				// update local meetings
 				UpdateListBox(this.meetingsListBox, this.meetingsList);
 			}
-			catch (RemotingException e)
+			catch (Exception e)
 			{
 				ThrowErrorPopup(e);
 			}
