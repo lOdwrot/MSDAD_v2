@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CommonTypes
 {
-    public class ServiceCreator
+    public class ServiceCreator : MarshalByRefObject
     {
         private static string CLIENT_EXECUTABLE_PATH = "../../../WindowsFormsApp1/bin/Debug/Client.exe";
         private static string SERVER_EXECUTABLE_PATH = "../../../Server/bin/Debug/Server.exe";
