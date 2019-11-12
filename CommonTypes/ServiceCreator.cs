@@ -26,6 +26,7 @@ namespace CommonTypes
                 };
 
                 process.Start();
+                Console.WriteLine("Client created");
                 return "Client created";
             }
             catch (Exception err)
@@ -51,6 +52,7 @@ namespace CommonTypes
                 };
 
                 process.Start();
+                Console.WriteLine("Server created");
                 return "Server Created";
             }
             catch (Exception err)
