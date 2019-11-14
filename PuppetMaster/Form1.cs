@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Remoting.Messaging;
@@ -18,10 +19,11 @@ namespace PuppetMaster
 {
     public partial class Form1 : Form
     {
-        const int PORT = 5091;
+        const int PORT = 5020;
 
         private Dictionary<String, ClientInstance> clients;
         private Dictionary<String, IServer> servers;
+        private ServiceCreator serviceCreator;
 
         public delegate string RemoteStatusDelegate();
         public Form1()
@@ -31,6 +33,8 @@ namespace PuppetMaster
             servers = new Dictionary<String, IServer>();
             TcpChannel channel = new TcpChannel(PORT);
             ChannelServices.RegisterChannel(channel, true);
+            serviceCreator = new ServiceCreator();
+            RemotingServices.Marshal(serviceCreator, "ServiceCreator", typeof(ServiceCreator));
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -56,8 +60,11 @@ namespace PuppetMaster
 
         private void buttonStatus_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("Start Invoking server!!!");
+            showStatus();
+        }
 
+        private void showStatus()
+        {
             foreach (String key in servers.Keys)
             {
                 handleStatusPrint("Srever " + key, servers[key]);
@@ -117,6 +124,9 @@ namespace PuppetMaster
                             s.AddRoom(args[0], args[2], Int32.Parse(args[1]));
                         }
                         break;
+                    case "Status":
+                        showStatus();
+                        break;
                     default:
                         appendMessage("Command Not Implemented" + cmd.CommandName + "\n");
                         break;
@@ -133,12 +143,12 @@ namespace PuppetMaster
         private void instantiateClient(String cUserName, String cClientURL, String cURL, String cScriptFile)
         {
             var args = cUserName + " " + cClientURL + " " + cURL + " " + cScriptFile;
-            var creationResult = new ServiceCreator().createClientInstance(args);
+            var creationResult = serviceCreator.createClientInstance(args);
             logs.Text += (creationResult + "\n");
 
             ClientInstance c = (ClientInstance)Activator.GetObject(
                 typeof(ClientInstance),
-                clientURL.Text
+                cClientURL
             );
 
             clients.Add(cUserName, c);
@@ -147,7 +157,7 @@ namespace PuppetMaster
         private void instantiateServer(String sId, String sURL, String sMaxFaults, String sMinDelay, String sMaxDelay)
         {
             String args = sId + " " + sURL + " " + sMaxFaults + " " + sMinDelay + " " + sMaxDelay;
-            var creationResult = new ServiceCreator().createServerInstance(args);
+            var creationResult = serviceCreator.createServerInstance(args);
             logs.Text += (creationResult + "\n");
 
             IServer s = (IServer)Activator.GetObject(
@@ -179,6 +189,14 @@ namespace PuppetMaster
             TestRemoteDelegate del = (TestRemoteDelegate)result.AsyncDelegate;
             String retrivedMessage = del.EndInvoke(ar);
             appendMessage(retrivedMessage);
+        }
+
+        private void setServiceCreatorButton_Click(object sender, EventArgs e)
+        {
+            serviceCreator = (ServiceCreator)Activator.GetObject(
+                typeof(ServiceCreator),
+                ServiceCreatorTextBox.Text
+            );
         }
     }
 }

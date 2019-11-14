@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.421
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29326.143
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PuppetMaster", "PuppetMaster\PuppetMaster.csproj", "{61573FE1-D04F-49E5-B88B-74FDFB04088A}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "WindowsFormsApp1\Client.csproj", "{14C504FA-C961-430C-9323-CB02AF0A9169}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{A1CBB16B-FD69-41BE-B30E-67717E9EC882}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicesCreator", "ServicesCreator\ServicesCreator.csproj", "{73E7A2FE-4371-4859-810B-1AB2B87A3DA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{A1CBB16B-FD69-41BE-B30E-67717E9EC882}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1CBB16B-FD69-41BE-B30E-67717E9EC882}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1CBB16B-FD69-41BE-B30E-67717E9EC882}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73E7A2FE-4371-4859-810B-1AB2B87A3DA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73E7A2FE-4371-4859-810B-1AB2B87A3DA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73E7A2FE-4371-4859-810B-1AB2B87A3DA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73E7A2FE-4371-4859-810B-1AB2B87A3DA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
