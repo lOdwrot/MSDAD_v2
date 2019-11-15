@@ -23,6 +23,8 @@ namespace PuppetMaster
 
         private Dictionary<String, ClientInstance> clients;
         private Dictionary<String, IServer> servers;
+        private Dictionary<String, String> serverURLs;
+
         private ServiceCreator serviceCreator;
 
         public delegate string RemoteStatusDelegate();
@@ -35,6 +37,7 @@ namespace PuppetMaster
             ChannelServices.RegisterChannel(channel, true);
             serviceCreator = new ServiceCreator();
             RemotingServices.Marshal(serviceCreator, "ServiceCreator", typeof(ServiceCreator));
+            serverURLs = new Dictionary<String, String>();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -164,7 +167,19 @@ namespace PuppetMaster
                 typeof(IServer),
                 sURL
             );
+
+            //Inform new servers about created ones
+            foreach (String key in serverURLs.Keys)
+            {
+                s.registerNewServer(key, serverURLs[key]);
+            }
+
+            //Inform other servers about new one
+            foreach (IServer server in servers.Values) {
+                server.registerNewServer(sId, sURL);
+            }
             servers.Add(sId, s);
+            serverURLs.Add(sId, sURL);
         }
 
         private void buttonCrashServer_Click(object sender, EventArgs e)

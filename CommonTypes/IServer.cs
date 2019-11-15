@@ -29,5 +29,12 @@ namespace CommonTypes
 
         void AddRoom(String location, String roomName, int capacity);
 
-	}
+        void registerNewServer(String serverId, String serverURL);
+
+        void registerNewClient(String clientId, String clientURL);
+
+        HashSet<String> getMyClientsSubset();
+
+        HashSet<String> getAgregatedClientsSubset();
+    }
 }
