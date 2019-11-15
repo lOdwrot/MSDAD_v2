@@ -6,9 +6,26 @@ namespace CommonTypes
 {
     public class ClientInstance : MarshalByRefObject, IRemoteMachine
     {
+        private string clientURL;
+        private HashSet<String> knowknClients;
+        public string ClientURL { get => clientURL; }
+        public HashSet<string> KnowknClients { get => knowknClients; set => knowknClients = value; }
+
+        public ClientInstance(String URL)
+        {
+            clientURL = URL;
+            knowknClients = new HashSet<string>();
+        }
+
         public string getStatus()
         {
-			return "hello";
+			return "Up And Runing";
         }
+
+        public void appendNewClient(string clientURL)
+        {
+            KnowknClients.Add(clientURL);
+        }
+
     }
 }

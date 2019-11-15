@@ -28,7 +28,6 @@ namespace Client
         private string clientURL = "";
         private string userName = "";
         private ClientInstance client;
-        private HashSet<String> otherClients;
         private IServer defaultServerInstance;
 
         private List<string> scriptCommands;
@@ -45,7 +44,6 @@ namespace Client
 			this.defaultPort = appSettings["defaultPort"];
 			this.defaultServiceName = appSettings["defaultServiceName"];
 			this.preferredServer = appSettings["preferredServer"];
-            this.otherClients = new HashSet<String>();
 
             // if command line parameters were given by PuppetMaster
             if (param != null)
@@ -76,7 +74,18 @@ namespace Client
 				// create client remote object
 				this.CreateRemoteService(port, serviceName);
 
-                otherClients = this.getCommunicationServer().getAgregatedClientsSubset();
+                //get initial contact list
+                client.KnowknClients = this.getCommunicationServer().getAgregatedClientsSubset();
+
+                // notify others about my existance
+                client.KnowknClients.ToList().ForEach(knowknClientUrl =>
+                {
+                    ((ClientInstance)Activator.GetObject(
+                        typeof(ClientInstance),
+                        knowknClientUrl
+                    )).appendNewClient(client.ClientURL);
+                });
+
                 //notify server about my data
                 this.getCommunicationServer().registerNewClient(userName, clientURL);
 
@@ -152,7 +161,7 @@ namespace Client
             TcpChannel channel = new TcpChannel(int.Parse(port));
             ChannelServices.RegisterChannel(channel, true);
 
-            client = new ClientInstance();
+            client = new ClientInstance("tcp://localhost:" + port +"/" + serviceName);
             RemotingServices.Marshal(client, serviceName, typeof(ClientInstance));
 
 			this.schedulerGroupBox.Enabled = true;
@@ -382,6 +391,21 @@ namespace Client
 			}
 			
 		}
-	}
+
+        private void listKnownClientsButton_Click(object sender, EventArgs e)
+        {
+            client.KnowknClients.ToList().ForEach(v => appendLog(v));
+        }
+
+        private void appendLog(String str)
+        {
+            this.Invoke(new Action(() => logsTextBox.AppendText(str + "\r\n")));
+        }
+
+        private void clearLogsButton_Click(object sender, EventArgs e)
+        {
+            logsTextBox.Text = "";
+        }
+    }
 
 }
