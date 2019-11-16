@@ -9,6 +9,6 @@ AddRoom Porto 1 room2
 Wait 2000
 Client c1 tcp://localhost:4001/client1 tcp://localhost:3001/server1 ../../../Scripts/cs1.txt
 Wait 5000
-Client c2 tcp://localhost:4002/client2 tcp://localhost:3001/server1 ../../../Scripts/cs2.txt
+Client c2 tcp://localhost:4002/client2 tcp://localhost:3002/server2 ../../../Scripts/cs2.txt
 Wait 15000
 Status

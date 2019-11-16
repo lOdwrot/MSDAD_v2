@@ -195,8 +195,15 @@ namespace Client
 				Meeting newMeeting = new Meeting(username, topic,
 					minParticipants, proposals, participants);
 
-				// tell server to create a new meeting
-				bool created = getCommunicationServer().CreateMeeting(newMeeting);
+                // tell server to create a new meeting
+                Executable executable = new Executable
+                {
+                    action = "createMeeting",
+                    newMeeting = newMeeting
+                };
+
+                bool created = (bool) getCommunicationServer().Request(executable);
+                //bool created = getCommunicationServer().CreateMeeting(newMeeting);
 
 				// TODO: throw custom error if meeting could not be created
 				if (!created)
@@ -222,8 +229,25 @@ namespace Client
 		{
 			try
 			{
-				// tell server you want to join
-				bool joined = getCommunicationServer().JoinMeeting(usernameBox.Text, meetingTopic, slot);
+                Executable executable = new Executable
+                {
+                    action = "joinMeeting",
+                    username = usernameBox.Text,
+                    meetingTopic = meetingTopic,
+                    slotPicked = slot
+                };
+                // tell server you want to join
+                Object output = getCommunicationServer().Request(executable);
+                Boolean joined;
+                if(output == null)
+                {
+                    joined = false;
+                }
+                else
+                {
+                    joined = true;
+                }
+                //bool joined = getCommunicationServer().JoinMeeting(usernameBox.Text, meetingTopic, slot);
 
 				// TODO: throw custom error if meeting could not be joined
 				if (!joined)
@@ -253,8 +277,16 @@ namespace Client
 
 			try
 			{
-				// tell server you want to close the meeting
-				Meeting closedMeeting = getCommunicationServer().CloseMeeting(usernameBox.Text, meetingTopic);
+                // tell server you want to close the meeting
+                Executable executable = new Executable
+                {
+                    action = "closeMeeting",
+                    username = usernameBox.Text,
+                    meetingTopic = meetingTopic
+                };
+                // tell server you want to join
+                Meeting closedMeeting = (Meeting) getCommunicationServer().Request(executable);
+                //Meeting closedMeeting = getCommunicationServer().CloseMeeting(usernameBox.Text, meetingTopic);
 
 				// TODO: throw custom error if meeting could not be closed
 				if (closedMeeting is null)
