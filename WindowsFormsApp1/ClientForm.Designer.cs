@@ -44,14 +44,16 @@
 			this.button3 = new System.Windows.Forms.Button();
 			this.meetingsListLabel = new System.Windows.Forms.Label();
 			this.meetingsListBox = new System.Windows.Forms.ListBox();
+			this.label1 = new System.Windows.Forms.Label();
+			this.participantsListBox = new System.Windows.Forms.ListBox();
 			this.participantsValueLabel = new System.Windows.Forms.Label();
 			this.participantsLabel = new System.Windows.Forms.Label();
 			this.coordinatorValueLabel = new System.Windows.Forms.Label();
 			this.coordinatorLabel = new System.Windows.Forms.Label();
 			this.topicValueLabel = new System.Windows.Forms.Label();
 			this.topicLabel = new System.Windows.Forms.Label();
-			this.button1 = new System.Windows.Forms.Button();
-			this.button4 = new System.Windows.Forms.Button();
+			this.closeMeetingButton = new System.Windows.Forms.Button();
+			this.joinMeetingButton = new System.Windows.Forms.Button();
 			this.slotListLabel = new System.Windows.Forms.Label();
 			this.slotListBox = new System.Windows.Forms.ListBox();
 			this.groupBox1.SuspendLayout();
@@ -243,14 +245,16 @@
 			// 
 			// splitContainer2.Panel2
 			// 
+			this.splitContainer2.Panel2.Controls.Add(this.label1);
+			this.splitContainer2.Panel2.Controls.Add(this.participantsListBox);
 			this.splitContainer2.Panel2.Controls.Add(this.participantsValueLabel);
 			this.splitContainer2.Panel2.Controls.Add(this.participantsLabel);
 			this.splitContainer2.Panel2.Controls.Add(this.coordinatorValueLabel);
 			this.splitContainer2.Panel2.Controls.Add(this.coordinatorLabel);
 			this.splitContainer2.Panel2.Controls.Add(this.topicValueLabel);
 			this.splitContainer2.Panel2.Controls.Add(this.topicLabel);
-			this.splitContainer2.Panel2.Controls.Add(this.button1);
-			this.splitContainer2.Panel2.Controls.Add(this.button4);
+			this.splitContainer2.Panel2.Controls.Add(this.closeMeetingButton);
+			this.splitContainer2.Panel2.Controls.Add(this.joinMeetingButton);
 			this.splitContainer2.Panel2.Controls.Add(this.slotListLabel);
 			this.splitContainer2.Panel2.Controls.Add(this.slotListBox);
 			this.splitContainer2.Panel2.Enabled = false;
@@ -300,6 +304,24 @@
 			this.meetingsListBox.Size = new System.Drawing.Size(241, 251);
 			this.meetingsListBox.TabIndex = 0;
 			this.meetingsListBox.SelectedIndexChanged += new System.EventHandler(this.meetingsListBox_SelectedIndexChanged);
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(10, 98);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(65, 13);
+			this.label1.TabIndex = 17;
+			this.label1.Text = "Participants:";
+			// 
+			// participantsListBox
+			// 
+			this.participantsListBox.FormattingEnabled = true;
+			this.participantsListBox.Location = new System.Drawing.Point(7, 117);
+			this.participantsListBox.Name = "participantsListBox";
+			this.participantsListBox.SelectionMode = System.Windows.Forms.SelectionMode.None;
+			this.participantsListBox.Size = new System.Drawing.Size(235, 56);
+			this.participantsListBox.TabIndex = 16;
 			// 
 			// participantsValueLabel
 			// 
@@ -358,30 +380,31 @@
 			this.topicLabel.TabIndex = 10;
 			this.topicLabel.Text = "Topic:";
 			// 
-			// button1
+			// closeMeetingButton
 			// 
-			this.button1.Enabled = false;
-			this.button1.Location = new System.Drawing.Point(129, 295);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(114, 23);
-			this.button1.TabIndex = 9;
-			this.button1.Text = "Close Meeting";
-			this.button1.UseVisualStyleBackColor = true;
+			this.closeMeetingButton.Enabled = false;
+			this.closeMeetingButton.Location = new System.Drawing.Point(129, 295);
+			this.closeMeetingButton.Name = "closeMeetingButton";
+			this.closeMeetingButton.Size = new System.Drawing.Size(114, 23);
+			this.closeMeetingButton.TabIndex = 9;
+			this.closeMeetingButton.Text = "Close Meeting";
+			this.closeMeetingButton.UseVisualStyleBackColor = true;
 			// 
-			// button4
+			// joinMeetingButton
 			// 
-			this.button4.Enabled = false;
-			this.button4.Location = new System.Drawing.Point(7, 295);
-			this.button4.Name = "button4";
-			this.button4.Size = new System.Drawing.Size(106, 23);
-			this.button4.TabIndex = 8;
-			this.button4.Text = "Join Meeting";
-			this.button4.UseVisualStyleBackColor = true;
+			this.joinMeetingButton.Enabled = false;
+			this.joinMeetingButton.Location = new System.Drawing.Point(7, 295);
+			this.joinMeetingButton.Name = "joinMeetingButton";
+			this.joinMeetingButton.Size = new System.Drawing.Size(106, 23);
+			this.joinMeetingButton.TabIndex = 8;
+			this.joinMeetingButton.Text = "Join Meeting";
+			this.joinMeetingButton.UseVisualStyleBackColor = true;
+			this.joinMeetingButton.Click += new System.EventHandler(this.joinMeetingButton_Click);
 			// 
 			// slotListLabel
 			// 
 			this.slotListLabel.AutoSize = true;
-			this.slotListLabel.Location = new System.Drawing.Point(7, 114);
+			this.slotListLabel.Location = new System.Drawing.Point(7, 187);
 			this.slotListLabel.Name = "slotListLabel";
 			this.slotListLabel.Size = new System.Drawing.Size(76, 13);
 			this.slotListLabel.TabIndex = 3;
@@ -391,10 +414,12 @@
 			// 
 			this.slotListBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.slotListBox.FormattingEnabled = true;
-			this.slotListBox.Location = new System.Drawing.Point(5, 138);
+			this.slotListBox.Location = new System.Drawing.Point(7, 203);
 			this.slotListBox.Name = "slotListBox";
-			this.slotListBox.Size = new System.Drawing.Size(237, 147);
+			this.slotListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiSimple;
+			this.slotListBox.Size = new System.Drawing.Size(237, 82);
 			this.slotListBox.TabIndex = 1;
+			this.slotListBox.SelectedIndexChanged += new System.EventHandler(this.slotListBox_SelectedIndexChanged);
 			// 
 			// ClientForm
 			// 
@@ -436,10 +461,10 @@
 		private System.Windows.Forms.Button button3;
 		private System.Windows.Forms.Label meetingsListLabel;
 		private System.Windows.Forms.ListBox meetingsListBox;
-		private System.Windows.Forms.Button button4;
+		private System.Windows.Forms.Button joinMeetingButton;
 		private System.Windows.Forms.Label slotListLabel;
 		private System.Windows.Forms.ListBox slotListBox;
-		private System.Windows.Forms.Button button1;
+		private System.Windows.Forms.Button closeMeetingButton;
 		private System.Windows.Forms.Label participantsValueLabel;
 		private System.Windows.Forms.Label participantsLabel;
 		private System.Windows.Forms.Label coordinatorValueLabel;
@@ -451,6 +476,8 @@
 		private System.Windows.Forms.Button debugButton;
 		private System.Windows.Forms.Label debugLabel;
 		private System.Windows.Forms.Button refreshList;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.ListBox participantsListBox;
 	}
 }
 

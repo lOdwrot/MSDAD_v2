@@ -128,9 +128,33 @@ namespace Client
 			this.coordinatorValueLabel.Text = meeting.coordinator;
 			this.participantsValueLabel.Text = meeting.minimumParticipants.ToString();
 
+			// if user is coordinator, enable "close meeting" button
+			this.closeMeetingButton.Enabled = this.usernameBox.Text == meeting.coordinator;
+
+			// display participants who've already joined
+			this.participantsListBox.DataSource = null;
+			this.participantsListBox.DataSource = meeting.getCurrentParticipants();
+
+			// display selectable date-location slots
 			this.slotListBox.DataSource = null;
 			this.slotListBox.DataSource = meeting.proposals;
-			
+
+		}
+
+		private void slotListBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			var meeting = this.meetingsList[this.meetingsListBox.SelectedIndex];
+
+			// if user hasn't already joined the meeting and any meeting was selected, enable "join meeting" button
+			this.joinMeetingButton.Enabled = meeting.votes.Where(v => v.voterName == this.usernameBox.Text).Count() == 0
+				&& this.slotListBox.SelectedItems.Count > 0;
+		}
+
+		private void joinMeetingButton_Click(object sender, EventArgs e)
+		{
+			var meeting = this.meetingsList[this.meetingsListBox.SelectedIndex];
+			var slots = this.slotListBox.SelectedItems;
+			JoinMeeting(meeting.topic, slots.Cast<Slot>().ToList());
 		}
 
 		// Network Functions
@@ -210,7 +234,7 @@ namespace Client
 			}
 		}
 
-		private void JoinMeeting(string meetingTopic, Slot slot)
+		private void JoinMeeting(string meetingTopic, List<Slot> slots)
 		{
 			try
 			{
@@ -220,7 +244,7 @@ namespace Client
 					preferredServer);
 
 				// tell server you want to join
-				bool joined = obj.JoinMeeting(usernameBox.Text, meetingTopic, slot);
+				bool joined = obj.JoinMeeting(usernameBox.Text, meetingTopic, slots);
 
 				// TODO: throw custom error if meeting could not be joined
 				if (!joined)
@@ -231,7 +255,7 @@ namespace Client
 				{
 					// joined meeting successfully; reflect changes client-side
 					var meeting = this.meetingsList.Find(m => m.topic.Equals(meetingTopic));
-					meeting.submitVotes(this.usernameBox.Text, slot);
+					meeting.submitVotes(this.usernameBox.Text, slots);
 
 					// update local meetings
 					UpdateListBox(this.meetingsListBox, this.meetingsList);
@@ -283,11 +307,8 @@ namespace Client
 
 		public static void UpdateListBox<T>(ListBox listBox, List<T> list)
 		{
-			listBox.Items.Clear();
-			foreach (var item in list)
-			{
-				listBox.Items.Add(item);
-			}
+			listBox.DataSource = null;
+			listBox.DataSource = list;
 		}
 
 		private void ThrowErrorPopup(Exception e)
@@ -352,12 +373,20 @@ namespace Client
 					}
 					CreateNewMeeting(this.usernameBox.Text, topic, minAtendees, proposals, participants);
 					break;
-				// join meeting_topic
+				// join meeting_topic number_of_slots slot_1 ... slot_n
 				case "join":
 					var meetingTopic = commandArgs[1];
-					// script does not select any specific slot, so we'll take the first one available
-					var slot = this.meetingsList.Find(m => m.topic.Equals(meetingTopic)).proposals.First();
-					JoinMeeting(meetingTopic, slot);
+					var numberSlots = int.Parse(commandArgs[2]);
+					var slotList = new List<Slot>();
+					for (int i = 3; i < numberSlots + 3; i++)
+					{
+						var currSlot = commandArgs[i].Split(',');
+						slotList.Add(new Slot(
+							currSlot[1],
+							currSlot[0]
+						));
+					}
+					JoinMeeting(meetingTopic, slotList);
 					break;
 				// close meeting_topic
 				case "close":

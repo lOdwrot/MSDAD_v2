@@ -23,7 +23,7 @@ namespace CommonTypes
 
 		bool CreateMeeting(Meeting newMeeting);
 
-		bool JoinMeeting(string username, string meetingTopic, Slot slotPicked);
+		bool JoinMeeting(string username, string meetingTopic, List<Slot> slotsPicked);
 
 		Meeting CloseMeeting(string username, string meetingTopic);
 

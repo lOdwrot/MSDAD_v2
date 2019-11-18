@@ -31,23 +31,20 @@ namespace CommonTypes
             this.status = MeetingStatus.New;
         }
 		
-        public void submitVotes(string voterName, Slot slot)
+        public void submitVotes(string voterName, List<Slot> slots)
         {
-			var userVote = votes.Where(v => v.voterName == voterName).FirstOrDefault();
-			if (userVote is null)
-			{
-				votes.Add(new Vote(voterName, new List<Slot> { slot }));
-			}
-			else
-			{
-				userVote.slots.Add(slot);
-			}
+			votes.Add(new Vote(voterName, slots));
         }
 
         public bool isClosed()
         {
 			return this.status != MeetingStatus.New;
         }
+
+		public List<string> getCurrentParticipants()
+		{
+			return this.votes.Select(v => v.voterName).ToList();
+		}
 
 		public override string ToString()
 		{

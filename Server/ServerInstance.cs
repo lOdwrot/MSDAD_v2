@@ -72,21 +72,27 @@ namespace Server
 
 		public bool CreateMeeting(Meeting newMeeting)
 		{
+			var locations = newMeeting.proposals.Select(s => s.location).Distinct().ToList();
+			var existingRoomLocations = defaultRooms.Select(r => r.location).Distinct().ToList();
+			// make sure meeting is only created if all locations exist
+			foreach (string location in locations)
+				if (!existingRoomLocations.Contains(location))
+					return false;
+
 			var exists = this.meetings.Where(m => m.topic == newMeeting.topic).Count() != 0;
 			if (!exists)
 				this.meetings.Add(newMeeting);
 			return !exists;
 		}
 
-		public bool JoinMeeting(string username, string meetingTopic, Slot slotPicked)
+		public bool JoinMeeting(string username, string meetingTopic, List<Slot> slotsPicked)
 		{
 			var meeting = this.meetings
 				.Where(m => m.topic == meetingTopic)
 				.FirstOrDefault();
-			var userVote = meeting.votes.Where(v => v.voterName == username).FirstOrDefault();
-			var alreadyVoted = userVote != null && userVote.slots.Contains(slotPicked);
+			var alreadyVoted = meeting.votes.Where(v => v.voterName == username).Count() > 0;
 			if (!alreadyVoted)
-				meeting.submitVotes(username, slotPicked);
+				meeting.submitVotes(username, slotsPicked);
 			return !alreadyVoted;
 		}
 
