@@ -25,7 +25,10 @@ namespace Client
 		private string defaultPort = "";
 		private string defaultServiceName = "";
 		private string preferredServer = "";
+        private string clientURL = "";
+        private string userName = "";
         private ClientInstance client;
+        private IServer defaultServerInstance;
 
         private List<string> scriptCommands;
 
@@ -42,23 +45,23 @@ namespace Client
 			this.defaultServiceName = appSettings["defaultServiceName"];
 			this.preferredServer = appSettings["preferredServer"];
 
-			// if command line parameters were given by PuppetMaster
-			if (param != null)
+            // if command line parameters were given by PuppetMaster
+            if (param != null)
 			{
-				// get parameters
-				string username = param[0];
-				string clientUrl = param[1];
+                // get parameters
+                userName = param[0];
+                clientURL = param[1];
 				string serverUrl = param[2];
 				string scriptFile = param[3];
 
 				// get port and service name via client url
 				// TODO: how can we launch the service on an IP other than the machine's?
-				string[] splitClientUrl = Regex.Split(clientUrl, "[:/]");
+				string[] splitClientUrl = Regex.Split(clientURL, "[:/]");
 				string serviceName = splitClientUrl[splitClientUrl.Length - 1];
 				string port = splitClientUrl[splitClientUrl.Length - 2];
 
 				// fill in visual details
-				usernameBox.Text = username;
+				usernameBox.Text = userName;
 				portBox.Text = port;
 				usernameBox.Enabled = false;
 				portBox.Enabled = false;
@@ -70,6 +73,21 @@ namespace Client
 
 				// create client remote object
 				this.CreateRemoteService(port, serviceName);
+
+                //get initial contact list
+                client.KnownClients = this.getCommunicationServer().getAgregatedClientsSubset();
+
+                // notify others about my existance
+                client.KnownClients.ToList().ForEach(knowknClientUrl =>
+                {
+                    ((ClientInstance)Activator.GetObject(
+                        typeof(ClientInstance),
+                        knowknClientUrl
+                    )).appendNewClient(client.ClientURL);
+                });
+
+                //notify server about my data
+                this.getCommunicationServer().registerNewClient(userName, clientURL);
 
                 // run script file
                 this.ReadScriptFile(scriptFile);
@@ -157,6 +175,16 @@ namespace Client
 			JoinMeeting(meeting.topic, slots.Cast<Slot>().ToList());
 		}
 
+		private void listKnownClientsButton_Click_1(object sender, EventArgs e)
+		{
+			client.KnownClients.ToList().ForEach(v => appendLog(v));
+		}
+
+		private void clearLogsButton_Click_1(object sender, EventArgs e)
+		{
+			logsTextBox.Text = "";
+		}
+
 		// Network Functions
 
 		private void CreateRemoteService(string port = null, string serviceName = null)
@@ -167,7 +195,7 @@ namespace Client
             TcpChannel channel = new TcpChannel(int.Parse(port));
             ChannelServices.RegisterChannel(channel, true);
 
-            client = new ClientInstance();
+            client = new ClientInstance("tcp://localhost:" + port +"/" + serviceName);
             RemotingServices.Marshal(client, serviceName, typeof(ClientInstance));
 
 			this.schedulerGroupBox.Enabled = true;
@@ -177,13 +205,8 @@ namespace Client
 		{
 			try
 			{
-				// contact server
-				IServer obj = (IServer)Activator.GetObject(
-					typeof(IServer),
-					preferredServer);
-
 				// ask server about current meetings
-				var updatedMeetings = obj.GetMeetings();
+				var updatedMeetings = getCommunicationServer().GetMeetings();
 
 				// add meetings to client meeting
 				this.meetingsList = updatedMeetings;
@@ -206,13 +229,8 @@ namespace Client
 				Meeting newMeeting = new Meeting(username, topic,
 					minParticipants, proposals, participants);
 
-				// contact server
-				IServer obj = (IServer)Activator.GetObject(
-					typeof(IServer),
-					preferredServer);
-
 				// tell server to create a new meeting
-				bool created = obj.CreateMeeting(newMeeting);
+				bool created = getCommunicationServer().CreateMeeting(newMeeting);
 
 				// TODO: throw custom error if meeting could not be created
 				if (!created)
@@ -238,13 +256,8 @@ namespace Client
 		{
 			try
 			{
-				// contact server
-				IServer obj = (IServer)Activator.GetObject(
-					typeof(IServer),
-					preferredServer);
-
 				// tell server you want to join
-				bool joined = obj.JoinMeeting(usernameBox.Text, meetingTopic, slots);
+				bool joined = getCommunicationServer().JoinMeeting(usernameBox.Text, meetingTopic, slots);
 
 				// TODO: throw custom error if meeting could not be joined
 				if (!joined)
@@ -274,13 +287,8 @@ namespace Client
 
 			try
 			{
-				// contact server
-				IServer obj = (IServer)Activator.GetObject(
-					typeof(IServer),
-					preferredServer);
-
 				// tell server you want to close the meeting
-				Meeting closedMeeting = obj.CloseMeeting(usernameBox.Text, meetingTopic);
+				Meeting closedMeeting = getCommunicationServer().CloseMeeting(usernameBox.Text, meetingTopic);
 
 				// TODO: throw custom error if meeting could not be closed
 				if (closedMeeting is null)
@@ -304,7 +312,17 @@ namespace Client
 		}
 
 		// Misc. Functions
+        
+        // We can also make a test call to server to check whether it's alive
+        private IServer getCommunicationServer()
+        {
+            defaultServerInstance = defaultServerInstance 
+                ?? (IServer)Activator.GetObject(
+                    typeof(IServer),
+                    preferredServer);
 
+            return defaultServerInstance;
+        }
 		public static void UpdateListBox<T>(ListBox listBox, List<T> list)
 		{
 			listBox.DataSource = null;
@@ -410,7 +428,13 @@ namespace Client
 			{
 				this.debugLabel.Text = this.scriptCommands[0];
 			}
-			
+
+		}
+
+		private void appendLog(String str)
+		{
+			this.Invoke(new Action(() => logsTextBox.AppendText(str + "\r\n")));
 		}
 	}
+
 }

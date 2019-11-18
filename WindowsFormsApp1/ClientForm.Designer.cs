@@ -38,6 +38,9 @@
 			this.debugBox = new System.Windows.Forms.GroupBox();
 			this.debugButton = new System.Windows.Forms.Button();
 			this.debugLabel = new System.Windows.Forms.Label();
+			this.listKnownClientsButton = new System.Windows.Forms.Button();
+			this.clearLogsButton = new System.Windows.Forms.Button();
+			this.logsTextBox = new System.Windows.Forms.RichTextBox();
 			this.schedulerGroupBox = new System.Windows.Forms.GroupBox();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this.refreshList = new System.Windows.Forms.Button();
@@ -82,7 +85,7 @@
 			this.groupBox1.Controls.Add(this.usernameBox);
 			this.groupBox1.Location = new System.Drawing.Point(3, 3);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(381, 59);
+			this.groupBox1.Size = new System.Drawing.Size(381, 60);
 			this.groupBox1.TabIndex = 0;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Registration";
@@ -117,7 +120,7 @@
 			this.registerButton.Enabled = false;
 			this.registerButton.Location = new System.Drawing.Point(300, 25);
 			this.registerButton.Name = "registerButton";
-			this.registerButton.Size = new System.Drawing.Size(75, 20);
+			this.registerButton.Size = new System.Drawing.Size(75, 21);
 			this.registerButton.TabIndex = 4;
 			this.registerButton.Text = "Connect";
 			this.registerButton.UseVisualStyleBackColor = true;
@@ -157,8 +160,7 @@
 			// 
 			// splitContainer1
 			// 
-			this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+			this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.splitContainer1.IsSplitterFixed = true;
 			this.splitContainer1.Location = new System.Drawing.Point(12, 12);
@@ -173,8 +175,8 @@
 			// splitContainer1.Panel2
 			// 
 			this.splitContainer1.Panel2.Controls.Add(this.schedulerGroupBox);
-			this.splitContainer1.Size = new System.Drawing.Size(526, 426);
-			this.splitContainer1.SplitterDistance = 65;
+			this.splitContainer1.Size = new System.Drawing.Size(526, 434);
+			this.splitContainer1.SplitterDistance = 66;
 			this.splitContainer1.TabIndex = 2;
 			// 
 			// debugBox
@@ -187,7 +189,7 @@
 			this.debugBox.Enabled = false;
 			this.debugBox.Location = new System.Drawing.Point(390, 3);
 			this.debugBox.Name = "debugBox";
-			this.debugBox.Size = new System.Drawing.Size(133, 59);
+			this.debugBox.Size = new System.Drawing.Size(133, 60);
 			this.debugBox.TabIndex = 6;
 			this.debugBox.TabStop = false;
 			this.debugBox.Text = "Debug";
@@ -199,7 +201,7 @@
 			this.debugButton.Enabled = false;
 			this.debugButton.Location = new System.Drawing.Point(34, 33);
 			this.debugButton.Name = "debugButton";
-			this.debugButton.Size = new System.Drawing.Size(75, 20);
+			this.debugButton.Size = new System.Drawing.Size(75, 21);
 			this.debugButton.TabIndex = 4;
 			this.debugButton.Text = "Next";
 			this.debugButton.UseVisualStyleBackColor = true;
@@ -212,27 +214,54 @@
 			this.debugLabel.AutoEllipsis = true;
 			this.debugLabel.Location = new System.Drawing.Point(6, 16);
 			this.debugLabel.Name = "debugLabel";
-			this.debugLabel.Size = new System.Drawing.Size(124, 13);
+			this.debugLabel.Size = new System.Drawing.Size(124, 14);
 			this.debugLabel.TabIndex = 1;
 			this.debugLabel.Text = "--";
 			// 
+			// listKnownClientsButton
+			// 
+			this.listKnownClientsButton.Location = new System.Drawing.Point(428, 472);
+			this.listKnownClientsButton.Name = "listKnownClientsButton";
+			this.listKnownClientsButton.Size = new System.Drawing.Size(110, 23);
+			this.listKnownClientsButton.TabIndex = 0;
+			this.listKnownClientsButton.Text = "List Known Clients";
+			this.listKnownClientsButton.Click += new System.EventHandler(this.listKnownClientsButton_Click_1);
+			// 
+			// clearLogsButton
+			// 
+			this.clearLogsButton.Location = new System.Drawing.Point(428, 501);
+			this.clearLogsButton.Name = "clearLogsButton";
+			this.clearLogsButton.Size = new System.Drawing.Size(110, 23);
+			this.clearLogsButton.TabIndex = 1;
+			this.clearLogsButton.Text = "Clear Log";
+			this.clearLogsButton.Click += new System.EventHandler(this.clearLogsButton_Click_1);
+			// 
+			// logsTextBox
+			// 
+			this.logsTextBox.Location = new System.Drawing.Point(15, 452);
+			this.logsTextBox.Name = "logsTextBox";
+			this.logsTextBox.Size = new System.Drawing.Size(407, 96);
+			this.logsTextBox.TabIndex = 2;
+			this.logsTextBox.Text = "";
+			// 
 			// schedulerGroupBox
 			// 
-			this.schedulerGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+			this.schedulerGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.schedulerGroupBox.Controls.Add(this.splitContainer2);
 			this.schedulerGroupBox.Enabled = false;
 			this.schedulerGroupBox.Location = new System.Drawing.Point(3, 3);
 			this.schedulerGroupBox.Name = "schedulerGroupBox";
-			this.schedulerGroupBox.Size = new System.Drawing.Size(520, 351);
+			this.schedulerGroupBox.Size = new System.Drawing.Size(520, 341);
 			this.schedulerGroupBox.TabIndex = 3;
 			this.schedulerGroupBox.TabStop = false;
 			this.schedulerGroupBox.Text = "Scheduler";
 			// 
 			// splitContainer2
 			// 
-			this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splitContainer2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.splitContainer2.Location = new System.Drawing.Point(3, 16);
 			this.splitContainer2.Name = "splitContainer2";
 			// 
@@ -425,8 +454,11 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(550, 450);
+			this.ClientSize = new System.Drawing.Size(550, 558);
+			this.Controls.Add(this.clearLogsButton);
 			this.Controls.Add(this.splitContainer1);
+			this.Controls.Add(this.listKnownClientsButton);
+			this.Controls.Add(this.logsTextBox);
 			this.Name = "ClientForm";
 			this.Text = "Form1";
 			this.groupBox1.ResumeLayout(false);
@@ -478,6 +510,9 @@
 		private System.Windows.Forms.Button refreshList;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.ListBox participantsListBox;
-	}
+        private System.Windows.Forms.Button listKnownClientsButton;
+        private System.Windows.Forms.Button clearLogsButton;
+        private System.Windows.Forms.RichTextBox logsTextBox;
+    }
 }
 

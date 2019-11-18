@@ -12,8 +12,10 @@ namespace Server
 		List<Meeting> meetings;
 		List<Room> defaultRooms;
 		List<string> defaultLocations;
+        Dictionary<String, ServerInstance> otherServers;
+        Dictionary<String, String> connectedClientsURLs;
 
-		private string status = "OK";
+        private string status = "OK";
         public ServerInstance()
         {
             this.defaultRooms = new List<Room> {
@@ -27,6 +29,8 @@ namespace Server
             };
 
             this.meetings = new List<Meeting>();
+            this.otherServers = new Dictionary<String, ServerInstance>();
+            this.connectedClientsURLs = new Dictionary<String, String>();
         }
 
         public void test()
@@ -151,6 +155,59 @@ namespace Server
         public void AddRoom(string location, string roomName, int capacity)
         {
             defaultRooms.Add(new Room(location, roomName, 10));
+        }
+
+        public void registerNewServer(String serverId, String serverURL)
+        {
+            ServerInstance s = (ServerInstance)Activator.GetObject(
+                typeof(ServerInstance),
+                serverURL
+            );
+            otherServers.Add(serverId, s);
+            Console.WriteLine("Registered new server: " + serverId + " | " + serverURL);
+        }
+
+        public void registerNewClient(string clientId, string clientURL)
+        {
+            connectedClientsURLs.Add(clientId, clientURL);
+            Console.WriteLine("New client connected: " + clientId + " | " + clientURL);
+        }
+
+        public HashSet<string> getMyClientsSubset()
+        {
+            int MAX_RETURNS = 10;
+            List<String> clientUrlList = connectedClientsURLs.Values.ToList();
+            HashSet<string> result = new HashSet<string>();
+            int addressessQuantity = MAX_RETURNS < clientUrlList.Count
+                ? MAX_RETURNS
+                : connectedClientsURLs.Count;
+
+            if (MAX_RETURNS < clientUrlList.Count)
+            {
+                clientUrlList.ForEach(v => result.Add(v));
+            } 
+            else
+            {
+                var random = new Random();
+                for (int i = 0; i < addressessQuantity; i++)
+                {
+                    var nextIndex = random.Next(connectedClientsURLs.Count);
+                    result.Add(clientUrlList[nextIndex]);
+                }
+            }
+
+            return result;
+        }
+
+        public HashSet<string> getAgregatedClientsSubset()
+        {
+            HashSet<string> result = getMyClientsSubset();
+            foreach (ServerInstance s in otherServers.Values)
+            {
+                s.getMyClientsSubset().ToList().ForEach(v => result.Add(v));
+            }
+
+            return result;
         }
     }
 }
