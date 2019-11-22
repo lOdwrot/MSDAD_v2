@@ -46,9 +46,9 @@
 			this.popupCloseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.popupCloseButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.popupCloseButton.Location = new System.Drawing.Point(170, 51);
+			this.popupCloseButton.Location = new System.Drawing.Point(261, 51);
 			this.popupCloseButton.Name = "popupCloseButton";
-			this.popupCloseButton.Size = new System.Drawing.Size(61, 23);
+			this.popupCloseButton.Size = new System.Drawing.Size(55, 23);
 			this.popupCloseButton.TabIndex = 1;
 			this.popupCloseButton.Text = "OK";
 			this.popupCloseButton.UseVisualStyleBackColor = true;
@@ -57,11 +57,15 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(397, 86);
+			this.ClientSize = new System.Drawing.Size(576, 86);
 			this.Controls.Add(this.popupCloseButton);
 			this.Controls.Add(this.popupText);
+			this.MaximizeBox = false;
+			this.MaximumSize = new System.Drawing.Size(592, 125);
+			this.MinimizeBox = false;
+			this.MinimumSize = new System.Drawing.Size(592, 125);
 			this.Name = "ErrorPopupForm";
-			this.Text = "ErrorPopupForm";
+			this.Text = "Error";
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

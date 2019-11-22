@@ -21,7 +21,7 @@ namespace PuppetMaster
     {
         const int PORT = 5020;
 
-        private Dictionary<String, ClientInstance> clients;
+        private Dictionary<String, IClient> clients;
         private Dictionary<String, IServer> servers;
         private Dictionary<String, String> serverURLs;
 
@@ -31,7 +31,7 @@ namespace PuppetMaster
         public Form1()
         {
             InitializeComponent();
-            clients = new Dictionary<String, ClientInstance>();
+            clients = new Dictionary<String, IClient>();
             servers = new Dictionary<String, IServer>();
             TcpChannel channel = new TcpChannel(PORT);
             ChannelServices.RegisterChannel(channel, true);
@@ -149,8 +149,8 @@ namespace PuppetMaster
             var creationResult = serviceCreator.createClientInstance(args);
             logs.Text += (creationResult + "\n");
 
-            ClientInstance c = (ClientInstance)Activator.GetObject(
-                typeof(ClientInstance),
+			IClient c = (IClient)Activator.GetObject(
+                typeof(IClient),
                 cClientURL
             );
 

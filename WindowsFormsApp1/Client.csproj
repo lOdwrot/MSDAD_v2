@@ -55,6 +55,7 @@
       <DependentUpon>ClientForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Client.cs" />
+    <Compile Include="ClientInstance.cs" />
     <Compile Include="CreateMeetingForm.cs">
       <SubType>Form</SubType>
     </Compile>

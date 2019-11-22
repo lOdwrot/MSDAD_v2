@@ -38,9 +38,6 @@
 			this.debugBox = new System.Windows.Forms.GroupBox();
 			this.debugButton = new System.Windows.Forms.Button();
 			this.debugLabel = new System.Windows.Forms.Label();
-			this.listKnownClientsButton = new System.Windows.Forms.Button();
-			this.clearLogsButton = new System.Windows.Forms.Button();
-			this.logsTextBox = new System.Windows.Forms.RichTextBox();
 			this.schedulerGroupBox = new System.Windows.Forms.GroupBox();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this.refreshList = new System.Windows.Forms.Button();
@@ -59,6 +56,9 @@
 			this.joinMeetingButton = new System.Windows.Forms.Button();
 			this.slotListLabel = new System.Windows.Forms.Label();
 			this.slotListBox = new System.Windows.Forms.ListBox();
+			this.listKnownClientsButton = new System.Windows.Forms.Button();
+			this.clearLogsButton = new System.Windows.Forms.Button();
+			this.logsTextBox = new System.Windows.Forms.RichTextBox();
 			this.groupBox1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.portBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -217,32 +217,6 @@
 			this.debugLabel.Size = new System.Drawing.Size(124, 14);
 			this.debugLabel.TabIndex = 1;
 			this.debugLabel.Text = "--";
-			// 
-			// listKnownClientsButton
-			// 
-			this.listKnownClientsButton.Location = new System.Drawing.Point(428, 472);
-			this.listKnownClientsButton.Name = "listKnownClientsButton";
-			this.listKnownClientsButton.Size = new System.Drawing.Size(110, 23);
-			this.listKnownClientsButton.TabIndex = 0;
-			this.listKnownClientsButton.Text = "List Known Clients";
-			this.listKnownClientsButton.Click += new System.EventHandler(this.listKnownClientsButton_Click_1);
-			// 
-			// clearLogsButton
-			// 
-			this.clearLogsButton.Location = new System.Drawing.Point(428, 501);
-			this.clearLogsButton.Name = "clearLogsButton";
-			this.clearLogsButton.Size = new System.Drawing.Size(110, 23);
-			this.clearLogsButton.TabIndex = 1;
-			this.clearLogsButton.Text = "Clear Log";
-			this.clearLogsButton.Click += new System.EventHandler(this.clearLogsButton_Click_1);
-			// 
-			// logsTextBox
-			// 
-			this.logsTextBox.Location = new System.Drawing.Point(15, 452);
-			this.logsTextBox.Name = "logsTextBox";
-			this.logsTextBox.Size = new System.Drawing.Size(407, 96);
-			this.logsTextBox.TabIndex = 2;
-			this.logsTextBox.Text = "";
 			// 
 			// schedulerGroupBox
 			// 
@@ -450,6 +424,32 @@
 			this.slotListBox.TabIndex = 1;
 			this.slotListBox.SelectedIndexChanged += new System.EventHandler(this.slotListBox_SelectedIndexChanged);
 			// 
+			// listKnownClientsButton
+			// 
+			this.listKnownClientsButton.Location = new System.Drawing.Point(428, 472);
+			this.listKnownClientsButton.Name = "listKnownClientsButton";
+			this.listKnownClientsButton.Size = new System.Drawing.Size(110, 23);
+			this.listKnownClientsButton.TabIndex = 0;
+			this.listKnownClientsButton.Text = "List Known Clients";
+			this.listKnownClientsButton.Click += new System.EventHandler(this.listKnownClientsButton_Click_1);
+			// 
+			// clearLogsButton
+			// 
+			this.clearLogsButton.Location = new System.Drawing.Point(428, 501);
+			this.clearLogsButton.Name = "clearLogsButton";
+			this.clearLogsButton.Size = new System.Drawing.Size(110, 23);
+			this.clearLogsButton.TabIndex = 1;
+			this.clearLogsButton.Text = "Clear Log";
+			this.clearLogsButton.Click += new System.EventHandler(this.clearLogsButton_Click_1);
+			// 
+			// logsTextBox
+			// 
+			this.logsTextBox.Location = new System.Drawing.Point(15, 452);
+			this.logsTextBox.Name = "logsTextBox";
+			this.logsTextBox.Size = new System.Drawing.Size(407, 96);
+			this.logsTextBox.TabIndex = 2;
+			this.logsTextBox.Text = "";
+			// 
 			// ClientForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -460,7 +460,7 @@
 			this.Controls.Add(this.listKnownClientsButton);
 			this.Controls.Add(this.logsTextBox);
 			this.Name = "ClientForm";
-			this.Text = "Form1";
+			this.Text = "Client";
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.portBox)).EndInit();

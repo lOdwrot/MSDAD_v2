@@ -33,6 +33,9 @@ namespace Client
         private List<string> scriptCommands;
 
 		private List<Meeting> meetingsList = new List<Meeting>();
+		private object meetingsListLock = new object();
+
+		public delegate bool AddNewMeeting(Meeting newMeeting);
 		
 		public ClientForm(string[] param = null)
 		{
@@ -55,7 +58,6 @@ namespace Client
 				string scriptFile = param[3];
 
 				// get port and service name via client url
-				// TODO: how can we launch the service on an IP other than the machine's?
 				string[] splitClientUrl = Regex.Split(clientURL, "[:/]");
 				string serviceName = splitClientUrl[splitClientUrl.Length - 1];
 				string port = splitClientUrl[splitClientUrl.Length - 2];
@@ -195,7 +197,7 @@ namespace Client
             TcpChannel channel = new TcpChannel(int.Parse(port));
             ChannelServices.RegisterChannel(channel, true);
 
-            client = new ClientInstance("tcp://localhost:" + port +"/" + serviceName);
+            client = new ClientInstance("tcp://localhost:" + port +"/" + serviceName, new AddNewMeeting(AddMeetingToList));
             RemotingServices.Marshal(client, serviceName, typeof(ClientInstance));
 
 			this.schedulerGroupBox.Enabled = true;
@@ -209,7 +211,10 @@ namespace Client
 				var updatedMeetings = getCommunicationServer().GetMeetings();
 
 				// add meetings to client meeting
-				this.meetingsList = updatedMeetings;
+				lock (meetingsListLock)
+				{
+					this.meetingsList = updatedMeetings; 
+				}
 
 				// update local meetings
 				UpdateListBox(this.meetingsListBox, this.meetingsList);
@@ -240,7 +245,13 @@ namespace Client
 				else
 				{
 					// meeting was created successfully; add to list
-					this.meetingsList.Add(newMeeting);
+					lock (meetingsListLock)
+					{
+						this.meetingsList.Add(newMeeting); 
+					}
+
+					// Gossip: spread meeting
+					this.client.GossipSpreadMeeting(newMeeting);
 
 					// update local meetings
 					UpdateListBox(this.meetingsListBox, this.meetingsList);
@@ -299,7 +310,9 @@ namespace Client
 				{
 					// closed meeting successfully; reflect changes client-side
 					var meetingIndex = this.meetingsList.FindIndex(m => m.topic.Equals(meetingTopic));
-					this.meetingsList[meetingIndex] = closedMeeting;
+					lock (meetingsListLock) {
+						this.meetingsList[meetingIndex] = closedMeeting;
+					}
 
 					// update local meetings
 					UpdateListBox(this.meetingsListBox, this.meetingsList);
@@ -313,6 +326,17 @@ namespace Client
 
 		// Misc. Functions
         
+		private bool AddMeetingToList(Meeting newMeeting)
+		{
+			lock(meetingsListLock)
+			{
+				if (this.meetingsList.Contains(newMeeting))
+					return false;
+				this.meetingsList.Add(newMeeting);
+				return true;
+			}
+		}
+
         // We can also make a test call to server to check whether it's alive
         private IServer getCommunicationServer()
         {

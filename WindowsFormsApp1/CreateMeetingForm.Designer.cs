@@ -320,7 +320,7 @@
 			this.Controls.Add(this.label1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Name = "CreateMeetingForm";
-			this.Text = "CreateMeetingForm";
+			this.Text = "Create new Meeting";
 			((System.ComponentModel.ISupportInitialize)(this.participantNumberBox)).EndInit();
 			this.tabControl1.ResumeLayout(false);
 			this.tabPage1.ResumeLayout(false);
