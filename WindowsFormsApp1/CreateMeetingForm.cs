@@ -43,6 +43,11 @@ namespace Client
 		{
 			return participants;
 		}
+		
+		private void topicBox_TextChanged(object sender, EventArgs e)
+		{
+			this.createMeetingButton.Enabled = this.topicBox.Text.Length > 0 && this.proposals.Count > 0;
+		}
 
 		private void locationBox_TextChanged(object sender, EventArgs e)
 		{
@@ -57,7 +62,7 @@ namespace Client
 			);
 
 			this.removeSlotButton.Enabled = this.slotsBox.SelectedIndex != -1;
-			this.createMeetingButton.Enabled = this.proposals.Count > 0;
+			this.createMeetingButton.Enabled = this.topicBox.Text.Length > 0 && this.proposals.Count > 0;
 			UpdateListBox(this.slotsBox, this.proposals);
 		}
 
@@ -70,6 +75,7 @@ namespace Client
 		{
 			this.proposals.RemoveAt(this.slotsBox.SelectedIndex);
 			this.removeSlotButton.Enabled = this.proposals.Count != 0;
+			this.createMeetingButton.Enabled = this.topicBox.Text.Length > 0 && this.proposals.Count > 0;
 			UpdateListBox(this.slotsBox, this.proposals);
 		}
 

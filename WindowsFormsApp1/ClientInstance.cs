@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client
@@ -38,13 +39,15 @@ namespace Client
 		{
 			var clientNum = Math.Min(this.GossipNumberOfClients, this.knownClients.Count);
 			var rand = new Random();
-			var clientList = this.knownClients.OrderBy(item => rand.Next()).ToList();
-			for (int i = 0; i < clientNum; i++)
+			var clientList = this.knownClients.OrderBy(item => rand.Next()).Take(clientNum);
+			foreach (string client in clientList)
 			{
-				((ClientInstance)Activator.GetObject(
-						typeof(ClientInstance),
-						clientList[i]
-					)).GossipAddMeeting(newMeeting);
+				ClientInstance clientObj = (ClientInstance)Activator.GetObject(
+					typeof(ClientInstance),
+					client
+				);
+				Thread thread = new Thread(() => clientObj.GossipAddMeeting(newMeeting));
+				thread.Start();
 			}
 		}
 

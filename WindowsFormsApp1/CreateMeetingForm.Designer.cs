@@ -74,6 +74,7 @@
 			this.topicBox.Name = "topicBox";
 			this.topicBox.Size = new System.Drawing.Size(166, 20);
 			this.topicBox.TabIndex = 1;
+			this.topicBox.TextChanged += new System.EventHandler(this.topicBox_TextChanged);
 			// 
 			// participantNumberBox
 			// 

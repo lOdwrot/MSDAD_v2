@@ -19,7 +19,7 @@ namespace Server
 
 		static void Main(string[] args)
 		{
-			if (args is null || args.Length < 0)
+			if (args is null || args.Length <= 0)
 			{
 				System.Console.WriteLine(@"""
 					Error: please give the correct amount of parameters.

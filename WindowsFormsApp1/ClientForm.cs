@@ -330,9 +330,10 @@ namespace Client
 		{
 			lock(meetingsListLock)
 			{
-				if (this.meetingsList.Contains(newMeeting))
+				if (this.meetingsList.Where(m => m.topic.Equals(newMeeting.topic)).Count() > 0)
 					return false;
 				this.meetingsList.Add(newMeeting);
+				UpdateListBox(this.meetingsListBox, this.meetingsList);
 				return true;
 			}
 		}
