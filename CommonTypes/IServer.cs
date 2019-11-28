@@ -31,10 +31,10 @@ namespace CommonTypes
 
         HashSet<String> getAgregatedClientsSubset();
 
-        object RB_Deliver(Executable executable, int sequenceNumber);
+        object RB_Deliver(Executable executable);
 
         object Request(Executable executable);
 
-        int getSequenceNumber();
+        //int getSequenceNumber();
     }
 }

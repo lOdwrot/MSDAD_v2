@@ -14,13 +14,16 @@ namespace Server
 		List<String> defaultLocations;
         Dictionary<String, ServerInstance> otherServers;
         Dictionary<String, String> connectedClientsURLs;
+        String serverId;
 
-        Dictionary<int, Executable> notDelivered;
-        int lastSequenceNumber;
+        List<Executable> notDelivered;
+        Dictionary<String, int> vector_clock;
+
+
         int leaderNumber = 0;
 
         private string status = "OK";
-        public ServerInstance()
+        public ServerInstance(String serverId)
         {
             this.defaultRooms = new List<Room> {
                 new Room("R1", "Lisboa", 10),
@@ -35,8 +38,10 @@ namespace Server
             this.meetings = new List<Meeting>();
             this.otherServers = new Dictionary<String, ServerInstance>();
             this.connectedClientsURLs = new Dictionary<String, String>();
-            this.notDelivered = new Dictionary<int, Executable>();
-            this.lastSequenceNumber = 0;
+            this.notDelivered = new List<Executable>();
+            this.serverId = serverId;
+            this.vector_clock = new Dictionary<String, int>();
+            vector_clock.Add(this.serverId, 0);
         }
 
         public void test()
@@ -164,6 +169,7 @@ namespace Server
                 serverURL
             );
             otherServers.Add(serverId, s);
+            vector_clock.Add(serverId, 0);
             Console.WriteLine("Registered new server: " + serverId + " | " + serverURL);
         }
 
@@ -210,35 +216,37 @@ namespace Server
             return result;
         }
 
-        private void RB_Broadcast(Executable executable, int sequenceNumber)
+        private void RB_Broadcast(Executable executable)
         {
             //Broadcast to everyone
             foreach (KeyValuePair<String,ServerInstance> server in otherServers)
             {
-                server.Value.RB_Deliver(executable,sequenceNumber);
+                server.Value.RB_Deliver(executable);
             }
         }
 
-        public Object RB_Deliver(Executable executable, int sequenceNumber)
+        public Object RB_Deliver(Executable executable)
         {
+            this.vector_clock.TryGetValue(executable.serverId, out int clock);
             //Checks if this sequence number is older than the last executed, and if it is not already in the list of not delivered
-            if (sequenceNumber > this.lastSequenceNumber & !this.notDelivered.ContainsKey(sequenceNumber))
+            if (executable.clock > clock & !this.notDelivered.Contains(executable))
             {
+                vector_clock[executable.serverId] = executable.clock;
                 //Add to list so no other "echo" executes this
-                this.notDelivered.Add(sequenceNumber, executable);
+                this.notDelivered.Add(executable);
 
                 //Checks if this sequence number is the next to execute
-                while (sequenceNumber != this.lastSequenceNumber + 1)
+                while (executable.clock != clock + 1)
                 {
                     System.Threading.Thread.Sleep(200);
                 }
                 //Broadcast before executing
-                RB_Broadcast(executable, sequenceNumber);
+                RB_Broadcast(executable);
 
                 //Execute the action
                 Object output = Deliver(executable);
-                this.lastSequenceNumber = sequenceNumber;
-                this.notDelivered.Remove(sequenceNumber);
+
+                this.notDelivered.Remove(executable);
                 return output;
                 //Execute next action if in memory
                 //this.notDelivered.TryGetValue(this.lastSequenceNumber + 1, out Executable nextAction);
@@ -249,17 +257,10 @@ namespace Server
 
         public Object Request(Executable executable)
         {
-            //int sequenceNumber = this.leader.getSequenceNumber();
-            otherServers.TryGetValue("s1", out ServerInstance leader);
-            if (leader == null) leader = this;
-            int sequenceNumber = leader.getSequenceNumber();
-            return RB_Deliver(executable, sequenceNumber);
-        }
-
-        public int getSequenceNumber()
-        {
-            leaderNumber = leaderNumber + 1;
-            return leaderNumber;
+            this.vector_clock.TryGetValue(this.serverId, out int clock);
+            executable.clock = clock + 1;
+            executable.serverId = this.serverId;
+            return RB_Deliver(executable);
         }
 
         private Object Deliver(Executable executable)

@@ -15,7 +15,8 @@ namespace CommonTypes
         public String meetingTopic { get; set; }
         public Slot slotPicked { get; set; }
         public Meeting newMeeting { get; set; }
-
+        public int clock { get; set; }
+        public String serverId { get; set; }
 
         public Executable()
         {
