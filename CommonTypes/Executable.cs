@@ -13,7 +13,7 @@ namespace CommonTypes
         public String action { get; set; }
         public String username { get; set; }
         public String meetingTopic { get; set; }
-        public Slot slotPicked { get; set; }
+        public List<Slot> slotsPicked { get; set; }
         public Meeting newMeeting { get; set; }
 
 

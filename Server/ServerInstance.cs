@@ -277,7 +277,7 @@ namespace Server
                 case "closeMeeting":
                     return this.CloseMeeting(executable.username, executable.meetingTopic);
                 case "joinMeeting":
-                    return this.JoinMeeting(executable.username, executable.meetingTopic, executable.slotPicked);
+                    return this.JoinMeeting(executable.username, executable.meetingTopic, executable.slotsPicked);
             }
             return null;
         }

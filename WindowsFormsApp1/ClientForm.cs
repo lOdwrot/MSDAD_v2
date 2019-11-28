@@ -279,7 +279,7 @@ namespace Client
                     action = "joinMeeting",
                     username = usernameBox.Text,
                     meetingTopic = meetingTopic,
-                    slotPicked = slot
+                    slotsPicked = slots
                 };
                 // tell server you want to join
                 Object output = getCommunicationServer().Request(executable);
