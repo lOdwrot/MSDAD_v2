@@ -11,9 +11,13 @@ namespace Server
 	{
 		List<Meeting> meetings;
 		List<Room> defaultRooms;
-		List<string> defaultLocations;
+		List<String> defaultLocations;
         Dictionary<String, ServerInstance> otherServers;
         Dictionary<String, String> connectedClientsURLs;
+
+        Dictionary<int, Executable> notDelivered;
+        int lastSequenceNumber;
+        int leaderNumber = 0;
 
         private string status = "OK";
         public ServerInstance()
@@ -31,6 +35,8 @@ namespace Server
             this.meetings = new List<Meeting>();
             this.otherServers = new Dictionary<String, ServerInstance>();
             this.connectedClientsURLs = new Dictionary<String, String>();
+            this.notDelivered = new Dictionary<int, Executable>();
+            this.lastSequenceNumber = 0;
         }
 
         public void test()
@@ -208,6 +214,72 @@ namespace Server
             }
 
             return result;
+        }
+
+        private void RB_Broadcast(Executable executable, int sequenceNumber)
+        {
+            //Broadcast to everyone
+            foreach (KeyValuePair<String,ServerInstance> server in otherServers)
+            {
+                server.Value.RB_Deliver(executable,sequenceNumber);
+            }
+        }
+
+        public Object RB_Deliver(Executable executable, int sequenceNumber)
+        {
+            //Checks if this sequence number is older than the last executed, and if it is not already in the list of not delivered
+            if (sequenceNumber > this.lastSequenceNumber & !this.notDelivered.ContainsKey(sequenceNumber))
+            {
+                //Add to list so no other "echo" executes this
+                this.notDelivered.Add(sequenceNumber, executable);
+
+                //Checks if this sequence number is the next to execute
+                while (sequenceNumber != this.lastSequenceNumber + 1)
+                {
+                    System.Threading.Thread.Sleep(200);
+                }
+                //Broadcast before executing
+                RB_Broadcast(executable, sequenceNumber);
+
+                //Execute the action
+                Object output = Deliver(executable);
+                this.lastSequenceNumber = sequenceNumber;
+                this.notDelivered.Remove(sequenceNumber);
+                return output;
+                //Execute next action if in memory
+                //this.notDelivered.TryGetValue(this.lastSequenceNumber + 1, out Executable nextAction);
+                //if (nextAction != null) RB_Deliver(executable, this.lastSequenceNumber + 1);
+            }
+            return null;
+        }
+
+        public Object Request(Executable executable)
+        {
+            //int sequenceNumber = this.leader.getSequenceNumber();
+            otherServers.TryGetValue("s1", out ServerInstance leader);
+            if (leader == null) leader = this;
+            int sequenceNumber = leader.getSequenceNumber();
+            return RB_Deliver(executable, sequenceNumber);
+        }
+
+        public int getSequenceNumber()
+        {
+            leaderNumber = leaderNumber + 1;
+            return leaderNumber;
+        }
+
+        private Object Deliver(Executable executable)
+        {
+            switch (executable.action)
+            {
+                case "createMeeting":
+                    return this.CreateMeeting(executable.newMeeting);
+                case "closeMeeting":
+                    return this.CloseMeeting(executable.username, executable.meetingTopic);
+                case "joinMeeting":
+                    return this.JoinMeeting(executable.username, executable.meetingTopic, executable.slotPicked);
+            }
+            return null;
         }
     }
 }
