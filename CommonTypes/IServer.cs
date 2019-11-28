@@ -21,12 +21,6 @@ namespace CommonTypes
 
 		List<Meeting> GetMeetings();
 
-		bool CreateMeeting(Meeting newMeeting);
-
-		bool JoinMeeting(string username, string meetingTopic, List<Slot> slotsPicked);
-
-		Meeting CloseMeeting(string username, string meetingTopic);
-
         void AddRoom(String location, String roomName, int capacity);
 
         void registerNewServer(String serverId, String serverURL);
@@ -38,5 +32,11 @@ namespace CommonTypes
         HashSet<String> getMyClientsSubset();
 
         HashSet<String> getAgregatedClientsSubset();
+
+        object RB_Deliver(Executable executable, int sequenceNumber);
+
+        object Request(Executable executable);
+
+        int getSequenceNumber();
     }
 }
