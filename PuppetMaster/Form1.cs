@@ -70,12 +70,25 @@ namespace PuppetMaster
         {
             foreach (String key in servers.Keys)
             {
-                handleStatusPrint("Srever " + key, servers[key]);
+                try
+                {
+                    handleStatusPrint("Server " + key, servers[key]);
+                }
+                catch (Exception e)
+                {
+                    appendMessage("Server " + key + " unreachable");
+                }
             };
 
             foreach (String key in clients.Keys)
             {
-                handleStatusPrint("Client " + key, clients[key]);
+                try
+                {
+                    handleStatusPrint("Client " + key, clients[key]);
+                } catch(Exception e)
+                {
+                    appendMessage("Client " + key + " unreachable");
+                }
             };
         }
 
@@ -103,8 +116,6 @@ namespace PuppetMaster
                 MessageBox.Show(err.Message);
                 return;
             }
-
-             
 
             foreach(Command cmd in commands)
             {

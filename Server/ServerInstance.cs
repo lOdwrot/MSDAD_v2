@@ -59,11 +59,13 @@ namespace Server
 
         public void freeze()
         {
+            Console.WriteLine("Server freezed!");
             status = "HALT";
         }
 
         public void unfreeze()
         {
+            Console.WriteLine("Server unfreezed!");
             if (status == "HALT")
             {
                 status = "OK";
@@ -72,6 +74,7 @@ namespace Server
 
         public void crash()
         {
+            Console.WriteLine("Server Stoped!");
             status = "CRASH";
         }
 
