@@ -17,7 +17,8 @@ namespace CommonTypes
         public Meeting newMeeting { get; set; }
         public int clock { get; set; }
         public String serverId { get; set; }
-
+        public Boolean toDeliver { get; set; } = false;
+        public int to_sn { get; set; }
         public Executable()
         {
         }		
