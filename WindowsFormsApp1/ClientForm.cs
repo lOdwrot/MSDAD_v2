@@ -384,8 +384,9 @@ namespace Client
 				{
 					response = getCommunicationServer().Request(executable);
 				}
-				catch (Exception)
+				catch (Exception e)
 				{
+					this.logsTextBox.AppendText(e.ToString() + " " + e.Message);
 					// server unavailable
 					attempts++;
 					if (attempts > maxAttempts)

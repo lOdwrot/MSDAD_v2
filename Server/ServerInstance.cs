@@ -263,10 +263,14 @@ namespace Server
         {
             //int sequenceNumber = this.leader.getSequenceNumber();
             otherServers.TryGetValue("s1", out string serverURL);
-			ServerInstance leader = (ServerInstance)Activator.GetObject(
-				typeof(ServerInstance),
-				serverURL
-			);
+			ServerInstance leader = null;
+			if (!(serverURL is null))
+			{
+				leader = (ServerInstance)Activator.GetObject(
+						typeof(ServerInstance),
+						serverURL
+					); 
+			}
             if (leader == null) leader = this;
             int sequenceNumber = leader.getSequenceNumber();
             return RB_Deliver(executable, sequenceNumber);
