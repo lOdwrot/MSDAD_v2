@@ -14,6 +14,7 @@ namespace Server
 		List<string> defaultLocations;
         Dictionary<String, ServerInstance> otherServers;
         Dictionary<String, String> connectedClientsURLs;
+        List<String> otherServersURLs;
 
         private string status = "OK";
         public ServerInstance()
@@ -31,6 +32,7 @@ namespace Server
             this.meetings = new List<Meeting>();
             this.otherServers = new Dictionary<String, ServerInstance>();
             this.connectedClientsURLs = new Dictionary<String, String>();
+            this.otherServersURLs = new List<String>();
         }
 
         public void test()
@@ -164,6 +166,7 @@ namespace Server
                 serverURL
             );
             otherServers.Add(serverId, s);
+            otherServersURLs.Add(serverURL);
             Console.WriteLine("Registered new server: " + serverId + " | " + serverURL);
         }
 
@@ -175,16 +178,17 @@ namespace Server
 
         public HashSet<string> getMyClientsSubset()
         {
-            int MAX_RETURNS = 10;
+            int MAX_RETURNS = 5;
             List<String> clientUrlList = connectedClientsURLs.Values.ToList();
             HashSet<string> result = new HashSet<string>();
             int addressessQuantity = MAX_RETURNS < clientUrlList.Count
                 ? MAX_RETURNS
                 : connectedClientsURLs.Count;
 
-            if (MAX_RETURNS < clientUrlList.Count)
+            if (MAX_RETURNS >= clientUrlList.Count)
             {
                 clientUrlList.ForEach(v => result.Add(v));
+                
             } 
             else
             {
@@ -208,6 +212,11 @@ namespace Server
             }
 
             return result;
+        }
+
+        public List<string> getOtherServerAddresses()
+        {
+            return otherServersURLs;
         }
     }
 }

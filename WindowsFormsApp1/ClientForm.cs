@@ -31,8 +31,9 @@ namespace Client
         private IServer defaultServerInstance;
 
         private List<string> scriptCommands;
+        private List<String> otherServers;
 
-		private List<Meeting> meetingsList = new List<Meeting>();
+        private List<Meeting> meetingsList = new List<Meeting>();
 		private object meetingsListLock = new object();
 
 		public delegate bool AddNewMeeting(Meeting newMeeting);
@@ -90,7 +91,7 @@ namespace Client
 
                 //notify server about my data
                 this.getCommunicationServer().registerNewClient(userName, clientURL);
-
+                this.otherServers = this.getCommunicationServer().getOtherServerAddresses();
                 // run script file
                 this.ReadScriptFile(scriptFile);
             }
@@ -460,6 +461,15 @@ namespace Client
 		{
 			this.Invoke(new Action(() => logsTextBox.AppendText(str + "\r\n")));
 		}
-	}
+
+        private void listServers_Click(object sender, EventArgs e)
+        {
+            foreach(String s in otherServers)
+            {
+                appendLog(s);
+            }
+            appendLog("Using: " + preferredServer);
+        }
+    }
 
 }

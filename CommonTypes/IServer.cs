@@ -33,6 +33,8 @@ namespace CommonTypes
 
         void registerNewClient(String clientId, String clientURL);
 
+        List<String> getOtherServerAddresses();
+
         HashSet<String> getMyClientsSubset();
 
         HashSet<String> getAgregatedClientsSubset();
