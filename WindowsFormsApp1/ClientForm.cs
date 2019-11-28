@@ -32,7 +32,7 @@ namespace Client
 
         private List<string> scriptCommands;
 
-		private List<Meeting> meetingsList = new List<Meeting>();
+        private List<Meeting> meetingsList = new List<Meeting>();
 		private object meetingsListLock = new object();
 
 		public delegate bool AddNewMeeting(Meeting newMeeting);
@@ -90,6 +90,7 @@ namespace Client
 
                 //notify server about my data and get server list in return
                 this.getCommunicationServer().registerNewClient(userName, clientURL);
+                this.client.KnownServers = this.getCommunicationServer().getOtherServerAddresses();
 
                 // run script file
                 this.ReadScriptFile(scriptFile);
@@ -372,9 +373,9 @@ namespace Client
 
 		private object TryRequest(Executable executable)
 		{
-			List<string> serverNames = this.client.KnownServers.Keys.ToList();
+			List<string> servers = this.client.KnownServers;
 			int attempts = 1;
-			int maxAttempts = serverNames.Count;
+			int maxAttempts = servers.Count;
 
 			object response = null;
 			while (response is null)
@@ -395,22 +396,12 @@ namespace Client
 					else
 					{
 						// change preferred server
-
-						// get current server key
-						// (if for some reason you can't find it, assume it was the first server)
-						string currServerName = this.client.KnownServers
-							.Where(kv => kv.Value.Equals(this.preferredServer))
-							.Select(kv => kv.Key)
-							.FirstOrDefault() ?? serverNames[0];
-
-						// get name of next server to contact
-						currServerName = serverNames[(serverNames.IndexOf(currServerName) + 1) % serverNames.Count];
-
+						
 						// clear current server
 						this.defaultServerInstance = null;
-
+						
 						// set next server as preferred one
-						this.preferredServer = this.client.KnownServers[currServerName];
+						this.preferredServer = servers[(servers.IndexOf(this.preferredServer) + 1) % servers.Count];
 					}
 				}
 			}
@@ -529,6 +520,15 @@ namespace Client
 		{
 			this.Invoke(new Action(() => logsTextBox.AppendText(str + "\r\n")));
 		}
-	}
+
+        private void listServers_Click(object sender, EventArgs e)
+        {
+            foreach(string s in this.client.KnownServers)
+            {
+                appendLog(s);
+            }
+            appendLog("Using: " + preferredServer);
+        }
+    }
 
 }

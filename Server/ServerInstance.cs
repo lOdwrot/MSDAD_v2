@@ -177,16 +177,17 @@ namespace Server
 
         public HashSet<string> getMyClientsSubset()
         {
-            int MAX_RETURNS = 10;
+            int MAX_RETURNS = 5;
             List<String> clientUrlList = connectedClients.Values.ToList();
             HashSet<string> result = new HashSet<string>();
             int addressessQuantity = MAX_RETURNS < clientUrlList.Count
                 ? MAX_RETURNS
                 : connectedClients.Count;
 
-            if (MAX_RETURNS < clientUrlList.Count)
+            if (MAX_RETURNS >= clientUrlList.Count)
             {
                 clientUrlList.ForEach(v => result.Add(v));
+                
             } 
             else
             {
@@ -216,6 +217,7 @@ namespace Server
             return result;
         }
 
+        
         private void RB_Broadcast(Executable executable, int sequenceNumber)
         {
             //Broadcast to everyone
@@ -288,6 +290,11 @@ namespace Server
                     return this.JoinMeeting(executable.username, executable.meetingTopic, executable.slotsPicked);
             }
             return null;
+        }
+
+        public List<string> getOtherServerAddresses()
+        {
+            return this.otherServers.Values.ToList();
         }
     }
 }

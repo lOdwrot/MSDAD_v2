@@ -12,7 +12,7 @@ namespace Client
 	{
 		public string ClientURL;
 		public HashSet<string> KnownClients;
-		public Dictionary<string, string> KnownServers;
+		public List<string> KnownServers;
 
 		private ClientForm.AddNewMeeting addMeetingMethod;
 		private readonly int GossipNumberOfClients = 2;
@@ -22,7 +22,7 @@ namespace Client
 			this.addMeetingMethod = addNewMeeting;
 			ClientURL = URL;
 			KnownClients = new HashSet<string>();
-			KnownServers = new Dictionary<string, string>();
+			KnownServers = new List<string>();
 		}
 
 		public string getStatus()
@@ -33,11 +33,6 @@ namespace Client
 		public void appendNewClient(string clientURL)
 		{
 			KnownClients.Add(clientURL);
-		}
-
-		public void setServerList(Dictionary<string, string> otherServers)
-		{
-			this.KnownServers = otherServers;
 		}
 
 		public void GossipSpreadMeeting(Meeting newMeeting)
