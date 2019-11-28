@@ -80,15 +80,15 @@ namespace Client
                 client.KnownClients = this.getCommunicationServer().getAgregatedClientsSubset();
 
                 // notify others about my existance
-                client.KnownClients.ToList().ForEach(knowknClientUrl =>
+                client.KnownClients.ToList().ForEach(knownClientUrl =>
                 {
                     ((ClientInstance)Activator.GetObject(
                         typeof(ClientInstance),
-                        knowknClientUrl
+                        knownClientUrl
                     )).appendNewClient(client.ClientURL);
                 });
 
-                //notify server about my data
+                //notify server about my data and get server list in return
                 this.getCommunicationServer().registerNewClient(userName, clientURL);
 
                 // run script file
@@ -240,9 +240,8 @@ namespace Client
                     action = "createMeeting",
                     newMeeting = newMeeting
                 };
-
-                bool created = (bool) getCommunicationServer().Request(executable);
-                //bool created = getCommunicationServer().CreateMeeting(newMeeting);
+				
+				bool created = (bool)TryRequest(executable);
 
 				// TODO: throw custom error if meeting could not be created
 				if (!created)
@@ -282,17 +281,8 @@ namespace Client
                     slotsPicked = slots
                 };
                 // tell server you want to join
-                Object output = getCommunicationServer().Request(executable);
-                Boolean joined;
-                if(output == null)
-                {
-                    joined = false;
-                }
-                else
-                {
-                    joined = true;
-                }
-                //bool joined = getCommunicationServer().JoinMeeting(usernameBox.Text, meetingTopic, slot);
+                object output = TryRequest(executable);
+				bool joined = !(output is null);
 
 				// TODO: throw custom error if meeting could not be joined
 				if (!joined)
@@ -330,8 +320,7 @@ namespace Client
                     meetingTopic = meetingTopic
                 };
                 // tell server you want to join
-                Meeting closedMeeting = (Meeting) getCommunicationServer().Request(executable);
-                //Meeting closedMeeting = getCommunicationServer().CloseMeeting(usernameBox.Text, meetingTopic);
+                Meeting closedMeeting = (Meeting)TryRequest(executable);
 
 				// TODO: throw custom error if meeting could not be closed
 				if (closedMeeting is null)
@@ -380,6 +369,54 @@ namespace Client
 
             return defaultServerInstance;
         }
+
+		private object TryRequest(Executable executable)
+		{
+			List<string> serverNames = this.client.KnownServers.Keys.ToList();
+			int attempts = 1;
+			int maxAttempts = serverNames.Count;
+
+			object response = null;
+			while (response is null)
+			{
+				try
+				{
+					response = getCommunicationServer().Request(executable);
+				}
+				catch (Exception)
+				{
+					// server unavailable
+					attempts++;
+					if (attempts > maxAttempts)
+					{
+						// no other server was available
+						throw new NoServersAvailableException();
+					}
+					else
+					{
+						// change preferred server
+
+						// get current server key
+						// (if for some reason you can't find it, assume it was the first server)
+						string currServerName = this.client.KnownServers
+							.Where(kv => kv.Value.Equals(this.preferredServer))
+							.Select(kv => kv.Key)
+							.FirstOrDefault() ?? serverNames[0];
+
+						// get name of next server to contact
+						currServerName = serverNames[(serverNames.IndexOf(currServerName) + 1) % serverNames.Count];
+
+						// clear current server
+						this.defaultServerInstance = null;
+
+						// set next server as preferred one
+						this.preferredServer = this.client.KnownServers[currServerName];
+					}
+				}
+			}
+			return response;
+		}
+
 		public static void UpdateListBox<T>(ListBox listBox, List<T> list)
 		{
 			listBox.DataSource = null;

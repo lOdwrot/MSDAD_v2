@@ -10,10 +10,9 @@ namespace Client
 {
 	public class ClientInstance : MarshalByRefObject, IClient
 	{
-		private string clientURL;
-		private HashSet<String> knownClients;
-		public string ClientURL { get => clientURL; }
-		public HashSet<string> KnownClients { get => knownClients; set => knownClients = value; }
+		public string ClientURL;
+		public HashSet<string> KnownClients;
+		public Dictionary<string, string> KnownServers;
 
 		private ClientForm.AddNewMeeting addMeetingMethod;
 		private readonly int GossipNumberOfClients = 2;
@@ -21,25 +20,31 @@ namespace Client
 		public ClientInstance(String URL, ClientForm.AddNewMeeting addNewMeeting)
 		{
 			this.addMeetingMethod = addNewMeeting;
-			clientURL = URL;
-			knownClients = new HashSet<string>();
+			ClientURL = URL;
+			KnownClients = new HashSet<string>();
+			KnownServers = new Dictionary<string, string>();
 		}
 
 		public string getStatus()
 		{
-			return "Up And Runing";
+			return "Up And Running";
 		}
 
 		public void appendNewClient(string clientURL)
 		{
 			KnownClients.Add(clientURL);
 		}
-		
+
+		public void setServerList(Dictionary<string, string> otherServers)
+		{
+			this.KnownServers = otherServers;
+		}
+
 		public void GossipSpreadMeeting(Meeting newMeeting)
 		{
-			var clientNum = Math.Min(this.GossipNumberOfClients, this.knownClients.Count);
+			var clientNum = Math.Min(this.GossipNumberOfClients, this.KnownClients.Count);
 			var rand = new Random();
-			var clientList = this.knownClients.OrderBy(item => rand.Next()).Take(clientNum);
+			var clientList = this.KnownClients.OrderBy(item => rand.Next()).Take(clientNum);
 			foreach (string client in clientList)
 			{
 				ClientInstance clientObj = (ClientInstance)Activator.GetObject(

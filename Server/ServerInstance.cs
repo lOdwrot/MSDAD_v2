@@ -11,9 +11,9 @@ namespace Server
 	{
 		List<Meeting> meetings;
 		List<Room> defaultRooms;
-		List<String> defaultLocations;
-        Dictionary<String, ServerInstance> otherServers;
-        Dictionary<String, String> connectedClientsURLs;
+		List<string> defaultLocations;
+        Dictionary<string, string> otherServers;
+        Dictionary<string, string> connectedClients;
 
         Dictionary<int, Executable> notDelivered;
         int lastSequenceNumber;
@@ -33,8 +33,8 @@ namespace Server
             };
 
             this.meetings = new List<Meeting>();
-            this.otherServers = new Dictionary<String, ServerInstance>();
-            this.connectedClientsURLs = new Dictionary<String, String>();
+            this.otherServers = new Dictionary<string, string>();
+            this.connectedClients = new Dictionary<string, string>();
             this.notDelivered = new Dictionary<int, Executable>();
             this.lastSequenceNumber = 0;
         }
@@ -165,28 +165,24 @@ namespace Server
 
         public void registerNewServer(String serverId, String serverURL)
         {
-            ServerInstance s = (ServerInstance)Activator.GetObject(
-                typeof(ServerInstance),
-                serverURL
-            );
-            otherServers.Add(serverId, s);
+            otherServers.Add(serverId, serverURL);
             Console.WriteLine("Registered new server: " + serverId + " | " + serverURL);
         }
 
         public void registerNewClient(string clientId, string clientURL)
         {
-            connectedClientsURLs.Add(clientId, clientURL);
+            connectedClients.Add(clientId, clientURL);
             Console.WriteLine("New client connected: " + clientId + " | " + clientURL);
-        }
+		}
 
         public HashSet<string> getMyClientsSubset()
         {
             int MAX_RETURNS = 10;
-            List<String> clientUrlList = connectedClientsURLs.Values.ToList();
+            List<String> clientUrlList = connectedClients.Values.ToList();
             HashSet<string> result = new HashSet<string>();
             int addressessQuantity = MAX_RETURNS < clientUrlList.Count
                 ? MAX_RETURNS
-                : connectedClientsURLs.Count;
+                : connectedClients.Count;
 
             if (MAX_RETURNS < clientUrlList.Count)
             {
@@ -197,7 +193,7 @@ namespace Server
                 var random = new Random();
                 for (int i = 0; i < addressessQuantity; i++)
                 {
-                    var nextIndex = random.Next(connectedClientsURLs.Count);
+                    var nextIndex = random.Next(connectedClients.Count);
                     result.Add(clientUrlList[nextIndex]);
                 }
             }
@@ -208,8 +204,12 @@ namespace Server
         public HashSet<string> getAgregatedClientsSubset()
         {
             HashSet<string> result = getMyClientsSubset();
-            foreach (ServerInstance s in otherServers.Values)
+            foreach (string serverURL in otherServers.Values)
             {
+				ServerInstance s = (ServerInstance)Activator.GetObject(
+					typeof(ServerInstance),
+					serverURL
+				);
                 s.getMyClientsSubset().ToList().ForEach(v => result.Add(v));
             }
 
@@ -219,9 +219,13 @@ namespace Server
         private void RB_Broadcast(Executable executable, int sequenceNumber)
         {
             //Broadcast to everyone
-            foreach (KeyValuePair<String,ServerInstance> server in otherServers)
-            {
-                server.Value.RB_Deliver(executable,sequenceNumber);
+            foreach (string serverURL in otherServers.Values)
+			{
+				ServerInstance s = (ServerInstance)Activator.GetObject(
+					typeof(ServerInstance),
+					serverURL
+				);
+				s.RB_Deliver(executable,sequenceNumber);
             }
         }
 
@@ -256,7 +260,11 @@ namespace Server
         public Object Request(Executable executable)
         {
             //int sequenceNumber = this.leader.getSequenceNumber();
-            otherServers.TryGetValue("s1", out ServerInstance leader);
+            otherServers.TryGetValue("s1", out string serverURL);
+			ServerInstance leader = (ServerInstance)Activator.GetObject(
+				typeof(ServerInstance),
+				serverURL
+			);
             if (leader == null) leader = this;
             int sequenceNumber = leader.getSequenceNumber();
             return RB_Deliver(executable, sequenceNumber);
