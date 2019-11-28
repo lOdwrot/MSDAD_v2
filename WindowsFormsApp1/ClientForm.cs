@@ -31,7 +31,6 @@ namespace Client
         private IServer defaultServerInstance;
 
         private List<string> scriptCommands;
-        private List<String> otherServers;
 
         private List<Meeting> meetingsList = new List<Meeting>();
 		private object meetingsListLock = new object();
@@ -81,17 +80,18 @@ namespace Client
                 client.KnownClients = this.getCommunicationServer().getAgregatedClientsSubset();
 
                 // notify others about my existance
-                client.KnownClients.ToList().ForEach(knowknClientUrl =>
+                client.KnownClients.ToList().ForEach(knownClientUrl =>
                 {
                     ((ClientInstance)Activator.GetObject(
                         typeof(ClientInstance),
-                        knowknClientUrl
+                        knownClientUrl
                     )).appendNewClient(client.ClientURL);
                 });
 
-                //notify server about my data
+                //notify server about my data and get server list in return
                 this.getCommunicationServer().registerNewClient(userName, clientURL);
-                this.otherServers = this.getCommunicationServer().getOtherServerAddresses();
+                this.client.KnownServers = this.getCommunicationServer().getOtherServerAddresses();
+
                 // run script file
                 this.ReadScriptFile(scriptFile);
             }
@@ -241,9 +241,8 @@ namespace Client
                     action = "createMeeting",
                     newMeeting = newMeeting
                 };
-
-                bool created = (bool) getCommunicationServer().Request(executable);
-                //bool created = getCommunicationServer().CreateMeeting(newMeeting);
+				
+				bool created = (bool)TryRequest(executable);
 
 				// TODO: throw custom error if meeting could not be created
 				if (!created)
@@ -283,17 +282,8 @@ namespace Client
                     slotsPicked = slots
                 };
                 // tell server you want to join
-                Object output = getCommunicationServer().Request(executable);
-                Boolean joined;
-                if(output == null)
-                {
-                    joined = false;
-                }
-                else
-                {
-                    joined = true;
-                }
-                //bool joined = getCommunicationServer().JoinMeeting(usernameBox.Text, meetingTopic, slot);
+                object output = TryRequest(executable);
+				bool joined = !(output is null);
 
 				// TODO: throw custom error if meeting could not be joined
 				if (!joined)
@@ -331,8 +321,7 @@ namespace Client
                     meetingTopic = meetingTopic
                 };
                 // tell server you want to join
-                Meeting closedMeeting = (Meeting) getCommunicationServer().Request(executable);
-                //Meeting closedMeeting = getCommunicationServer().CloseMeeting(usernameBox.Text, meetingTopic);
+                Meeting closedMeeting = (Meeting)TryRequest(executable);
 
 				// TODO: throw custom error if meeting could not be closed
 				if (closedMeeting is null)
@@ -381,6 +370,45 @@ namespace Client
 
             return defaultServerInstance;
         }
+
+		private object TryRequest(Executable executable)
+		{
+			List<string> servers = this.client.KnownServers;
+			int attempts = 1;
+			int maxAttempts = servers.Count;
+
+			object response = null;
+			while (response is null)
+			{
+				try
+				{
+					response = getCommunicationServer().Request(executable);
+				}
+				catch (Exception e)
+				{
+					this.logsTextBox.AppendText(e.ToString() + " " + e.Message);
+					// server unavailable
+					attempts++;
+					if (attempts > maxAttempts)
+					{
+						// no other server was available
+						throw new NoServersAvailableException();
+					}
+					else
+					{
+						// change preferred server
+						
+						// clear current server
+						this.defaultServerInstance = null;
+						
+						// set next server as preferred one
+						this.preferredServer = servers[(servers.IndexOf(this.preferredServer) + 1) % servers.Count];
+					}
+				}
+			}
+			return response;
+		}
+
 		public static void UpdateListBox<T>(ListBox listBox, List<T> list)
 		{
 			listBox.DataSource = null;
@@ -496,7 +524,7 @@ namespace Client
 
         private void listServers_Click(object sender, EventArgs e)
         {
-            foreach(String s in otherServers)
+            foreach(string s in this.client.KnownServers)
             {
                 appendLog(s);
             }
