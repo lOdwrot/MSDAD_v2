@@ -15,6 +15,8 @@ namespace Server
         Dictionary<String, ServerInstance> otherServers;
         Dictionary<String, String> connectedClientsURLs;
         String serverId;
+        int minDelay;
+        int maxDelay;
 
         List<Executable> notDelivered;
         Dictionary<String, int> vector_clock;
@@ -26,7 +28,7 @@ namespace Server
         int to_sn = 0;
 
         private string status = "OK";
-        public ServerInstance(String serverId)
+        public ServerInstance(String serverId, int minDelay, int maxDelay, int maxFaults)
         {
             this.defaultRooms = new List<Room> {
                 new Room("R1", "Lisboa", 10),
@@ -43,6 +45,8 @@ namespace Server
             this.connectedClientsURLs = new Dictionary<String, String>();
             this.notDelivered = new List<Executable>();
             this.serverId = serverId;
+            this.minDelay = minDelay;
+            this.maxDelay = maxDelay;
             this.vector_clock = new Dictionary<String, int>();
             this.vector_clock.Add(this.serverId, 0);
             this.last_to_sn = 0;
@@ -62,16 +66,19 @@ namespace Server
 
         public string getStatus()
         {
+            waitForProcessRequest();
             return status;
         }
 
         public void freeze()
         {
+            Console.WriteLine("Freezed");
             status = "HALT";
         }
 
         public void unfreeze()
         {
+            Console.WriteLine("Unfreezeing");
             if (status == "HALT")
             {
                 status = "OK";
@@ -87,12 +94,13 @@ namespace Server
 
 		public List<Meeting> GetMeetings()
 		{
-			return this.meetings;
+            waitForProcessRequest();
+            return this.meetings;
 		}
 
 		public bool CreateMeeting(Meeting newMeeting)
 		{
-			var exists = this.meetings.Where(m => m.topic == newMeeting.topic).Count() != 0;
+            var exists = this.meetings.Where(m => m.topic == newMeeting.topic).Count() != 0;
 			if (!exists)
 				this.meetings.Add(newMeeting);
 			return !exists;
@@ -100,7 +108,7 @@ namespace Server
 
 		public bool JoinMeeting(string username, string meetingTopic, Slot slotPicked)
 		{
-			var meeting = this.meetings
+            var meeting = this.meetings
 				.Where(m => m.topic == meetingTopic)
 				.FirstOrDefault();
 			var userVote = meeting.votes.Where(v => v.voterName == username).FirstOrDefault();
@@ -164,6 +172,7 @@ namespace Server
 
         public void AddRoom(string location, string roomName, int capacity)
         {
+            waitForProcessRequest();
             defaultRooms.Add(new Room(location, roomName, 10));
         }
 
@@ -315,6 +324,7 @@ namespace Server
 
         public Object Request(Executable executable)
         {
+            waitForProcessRequest();
             this.my_clock = this.my_clock + 1;
             executable.clock = this.my_clock;
             executable.serverId = this.serverId;
@@ -333,6 +343,21 @@ namespace Server
                     return this.JoinMeeting(executable.username, executable.meetingTopic, executable.slotPicked);
             }
             return null;
+        }
+
+        private void waitForProcessRequest()
+        {
+            if(maxDelay > 0)
+            {
+                Random r = new Random();
+                int rInt = r.Next(minDelay, maxDelay);
+                System.Threading.Thread.Sleep(rInt);
+            }
+
+            while (status != "OK")
+            {
+                System.Threading.Thread.Sleep(200);
+            }
         }
     }
 }
