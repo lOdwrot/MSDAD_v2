@@ -83,30 +83,47 @@ namespace Server
 			return this.meetings;
 		}
 
-		public bool CreateMeeting(Meeting newMeeting)
+		public int CreateMeeting(Meeting newMeeting)
 		{
 			var locations = newMeeting.proposals.Select(s => s.location).Distinct().ToList();
 			var existingRoomLocations = defaultRooms.Select(r => r.location).Distinct().ToList();
+
 			// make sure meeting is only created if all locations exist
 			foreach (string location in locations)
 				if (!existingRoomLocations.Contains(location))
-					return false;
+					return -1;
 
-			var exists = this.meetings.Where(m => m.topic == newMeeting.topic).Count() != 0;
-			if (!exists)
-				this.meetings.Add(newMeeting);
-			return !exists;
+			// make sure meeting doesn't already exist
+			if (this.meetings.Where(m => m.topic == newMeeting.topic).Count() != 0)
+				return -2;
+
+			this.meetings.Add(newMeeting);
+			return 0;
 		}
 
-		public bool JoinMeeting(string username, string meetingTopic, List<Slot> slotsPicked)
+		public int JoinMeeting(string username, string meetingTopic, List<Slot> slotsPicked)
 		{
 			var meeting = this.meetings
 				.Where(m => m.topic == meetingTopic)
 				.FirstOrDefault();
-			var alreadyVoted = meeting.votes.Where(v => v.voterName == username).Count() > 0;
-			if (!alreadyVoted)
-				meeting.submitVotes(username, slotsPicked);
-			return !alreadyVoted;
+
+			// can't join if slots are not proposed
+			foreach (var slot in slotsPicked)
+			{
+				if (meeting.proposals.Where(p => p.date.Equals(slot.date) && p.location.Equals(slot.location)).Count() == 0)
+					return -1;
+			}
+
+			// can't join if user already joined
+			if (meeting.votes.Where(v => v.voterName == username).Count() > 0)
+				return -2;
+
+			// can't join if not invited
+			if (meeting.invited.Count > 0 && !meeting.invited.Contains(username))
+				return -3;
+
+			meeting.submitVotes(username, slotsPicked);
+			return 0;
 		}
 
 		public Meeting CloseMeeting(string username, string meetingTopic)

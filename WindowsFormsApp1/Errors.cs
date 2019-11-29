@@ -9,6 +9,13 @@ namespace Client
 	public class NoServersAvailableException : Exception { }
 
 	public class MeetingNotCreatedException : Exception { }
+	public class LocationDoesNotExistException : MeetingNotCreatedException { }
+	public class MeetingAlreadyExistsException : MeetingNotCreatedException { }
+
 	public class MeetingNotJoinedException : Exception { }
+	public class UnproposedSlotsMeetingException : MeetingNotJoinedException { }
+	public class AlreadyJoinedMeetingException : MeetingNotJoinedException { }
+	public class NotInvitedMeetingException : MeetingNotJoinedException { }
+
 	public class MeetingNotClosedException : Exception { }
 }

@@ -150,6 +150,8 @@ namespace Client
 		private void UpdateSelectedMeeting()
 		{
 			var index = this.meetingsListBox.SelectedIndex;
+			if (index < 0 || index >= this.meetingsList.Count)
+				return;
 			var meeting = this.meetingsList[index];
 			this.splitContainer2.Panel2.Enabled = true;
 			this.topicValueLabel.Text = meeting.topic;
@@ -161,12 +163,13 @@ namespace Client
 				this.usernameBox.Text == meeting.coordinator && meeting.status == MeetingStatus.New;
 
 			// display participants who've already joined
-			this.participantsListBox.DataSource = null;
-			this.participantsListBox.DataSource = meeting.getCurrentParticipants();
+			UpdateListBox(this.participantsListBox, meeting.getCurrentParticipants());
 
 			// display selectable date-location slots
-			this.slotListBox.DataSource = null;
-			this.slotListBox.DataSource = meeting.proposals;
+			UpdateListBox(this.slotListBox, meeting.proposals);
+
+			// disable slot list if user already voted
+			this.slotListBox.Enabled = meeting.votes.Where(v => v.voterName == this.usernameBox.Text).Count() == 0;
 		}
 
 		private void slotListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -194,6 +197,15 @@ namespace Client
 		private void listKnownClientsButton_Click_1(object sender, EventArgs e)
 		{
 			client.KnownClients.ToList().ForEach(v => appendLog(v));
+		}
+
+		private void listServers_Click(object sender, EventArgs e)
+		{
+			foreach (string s in this.client.KnownServers)
+			{
+				appendLog(s);
+			}
+			appendLog("Using: " + preferredServer);
 		}
 
 		private void clearLogsButton_Click_1(object sender, EventArgs e)
@@ -256,27 +268,29 @@ namespace Client
                     newMeeting = newMeeting
                 };
 				
-				bool created = (bool)TryRequest(executable);
+				int output = (int)TryRequest(executable);
+				
+				switch (output) {
+					case -1:
+						ThrowErrorPopup(new LocationDoesNotExistException());
+						break;
+					case -2:
+						ThrowErrorPopup(new MeetingAlreadyExistsException());
+						break;
+					default:
+						// meeting was created successfully; add to list
+						lock (meetingsListLock)
+						{
+							this.meetingsList.Add(newMeeting); 
+						}
 
-				// TODO: throw custom error if meeting could not be created
-				if (!created)
-				{
-					ThrowErrorPopup(new MeetingNotCreatedException());
-				}
-				else
-				{
-					// meeting was created successfully; add to list
-					lock (meetingsListLock)
-					{
-						this.meetingsList.Add(newMeeting); 
-					}
+						// Gossip: spread meeting
+						this.client.GossipSpreadMeeting(newMeeting);
 
-					// Gossip: spread meeting
-					this.client.GossipSpreadMeeting(newMeeting);
-
-					// update local meetings
-					UpdateListBox(this.meetingsListBox, this.meetingsList);
-					UpdateSelectedMeeting();
+						// update local meetings
+						UpdateListBox(this.meetingsListBox, this.meetingsList);
+						UpdateSelectedMeeting();
+						break;
 				}
 			}
 			catch (RemotingException e)
@@ -296,27 +310,33 @@ namespace Client
                     meetingTopic = meetingTopic,
                     slotsPicked = slots
                 };
+
                 // tell server you want to join
-                object output = TryRequest(executable);
-				bool joined = !(output is null);
+                int output = (int)TryRequest(executable);
 
-				// TODO: throw custom error if meeting could not be joined
-				if (!joined)
+				switch (output)
 				{
-					ThrowErrorPopup(new MeetingNotJoinedException());
-				}
-				else
-				{
-					// joined meeting successfully; reflect changes client-side
-					var meeting = this.meetingsList.Find(m => m.topic.Equals(meetingTopic));
-					meeting.submitVotes(this.usernameBox.Text, slots);
+					case -1:
+						ThrowErrorPopup(new UnproposedSlotsMeetingException());
+						break;
+					case -2:
+						ThrowErrorPopup(new AlreadyJoinedMeetingException());
+						break;
+					case -3:
+						ThrowErrorPopup(new NotInvitedMeetingException());
+						break;
+					default:
+						// joined meeting successfully; reflect changes client-side
+						var meeting = this.meetingsList.Find(m => m.topic.Equals(meetingTopic));
+						meeting.submitVotes(this.usernameBox.Text, slots);
 
-					// update local meetings
-					UpdateListBox(this.meetingsListBox, this.meetingsList);
+						// update local meetings
+						UpdateListBox(this.meetingsListBox, this.meetingsList);
 
-					// if meeting was selected one, update GUI
-					if (this.meetingsListBox.SelectedIndex == this.meetingsList.IndexOf(meeting))
-						UpdateSelectedMeeting();
+						// if meeting was selected one, update GUI
+						if (this.meetingsListBox.SelectedIndex == this.meetingsList.IndexOf(meeting))
+							UpdateSelectedMeeting();
+						break;
 				}
 			}
 			catch (RemotingException e)
@@ -486,7 +506,7 @@ namespace Client
 					int numSlots = int.Parse(commandArgs[3]);
 					int numInvitees = int.Parse(commandArgs[4]);
 					List<Slot> proposals = new List<Slot>();
-					for (int i = 5; i < 5 + numSlots - 1; i++)
+					for (int i = 5; i < 5 + numSlots; i++)
 					{
 						var currSlot = commandArgs[i].Split(',');
 						proposals.Add(new Slot(
@@ -545,15 +565,6 @@ namespace Client
 		{
 			this.Invoke(new Action(() => logsTextBox.AppendText(str + "\r\n")));
 		}
-
-        private void listServers_Click(object sender, EventArgs e)
-        {
-            foreach(string s in this.client.KnownServers)
-            {
-                appendLog(s);
-            }
-            appendLog("Using: " + preferredServer);
-        }
 	}
 
 }
