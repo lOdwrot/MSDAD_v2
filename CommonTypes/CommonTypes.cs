@@ -11,7 +11,7 @@ namespace CommonTypes
         public string coordinator { get; }
 		public string topic { get; }
 		public int minimumParticipants { get; }
-		public MeetingStatus status { get; }
+		public MeetingStatus status { get; set; }
 		public List<String> invited { get; }
 		public List<Slot> proposals { get; }
 		public List<Vote> votes { get; set; }

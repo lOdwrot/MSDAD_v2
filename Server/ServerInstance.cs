@@ -116,10 +116,13 @@ namespace Server
 			if (meeting.isClosed())
 				return null;
 
-			// there has to be enough participants
+			// if there isn't enough participants, close the meeting
 			var numParticipants = meeting.votes.Count();
 			if (numParticipants < meeting.minimumParticipants)
-				return null;
+			{
+				meeting.status = MeetingStatus.Canceled;
+				return meeting;
+			}
 
 			var usersPerVote = new List<Tuple<Slot, List<string>>>();
 			foreach (Vote vote in meeting.votes)

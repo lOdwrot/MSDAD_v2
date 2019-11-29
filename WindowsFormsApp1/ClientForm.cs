@@ -139,18 +139,26 @@ namespace Client
 		private void refreshList_Click(object sender, EventArgs e)
 		{
 			GetMeetingsList();
+			UpdateSelectedMeeting();
 		}
 
 		private void meetingsListBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			var meeting = this.meetingsList[this.meetingsListBox.SelectedIndex];
+			UpdateSelectedMeeting();
+		}
+
+		private void UpdateSelectedMeeting()
+		{
+			var index = this.meetingsListBox.SelectedIndex;
+			var meeting = this.meetingsList[index];
 			this.splitContainer2.Panel2.Enabled = true;
 			this.topicValueLabel.Text = meeting.topic;
 			this.coordinatorValueLabel.Text = meeting.coordinator;
 			this.participantsValueLabel.Text = meeting.minimumParticipants.ToString();
 
-			// if user is coordinator, enable "close meeting" button
-			this.closeMeetingButton.Enabled = this.usernameBox.Text == meeting.coordinator;
+			// if user is coordinator and meeting isn't closed, enable "close meeting" button
+			this.closeMeetingButton.Enabled =
+				this.usernameBox.Text == meeting.coordinator && meeting.status == MeetingStatus.New;
 
 			// display participants who've already joined
 			this.participantsListBox.DataSource = null;
@@ -159,7 +167,6 @@ namespace Client
 			// display selectable date-location slots
 			this.slotListBox.DataSource = null;
 			this.slotListBox.DataSource = meeting.proposals;
-
 		}
 
 		private void slotListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -176,6 +183,12 @@ namespace Client
 			var meeting = this.meetingsList[this.meetingsListBox.SelectedIndex];
 			var slots = this.slotListBox.SelectedItems;
 			JoinMeeting(meeting.topic, slots.Cast<Slot>().ToList());
+		}
+
+		private void closeMeetingButton_Click(object sender, EventArgs e)
+		{
+			var meeting = this.meetingsList[this.meetingsListBox.SelectedIndex];
+			CloseMeeting(meeting.topic);
 		}
 
 		private void listKnownClientsButton_Click_1(object sender, EventArgs e)
@@ -219,6 +232,7 @@ namespace Client
 
 				// update local meetings
 				UpdateListBox(this.meetingsListBox, this.meetingsList);
+				UpdateSelectedMeeting();
 			}
 			catch (Exception e)
 			{
@@ -262,6 +276,7 @@ namespace Client
 
 					// update local meetings
 					UpdateListBox(this.meetingsListBox, this.meetingsList);
+					UpdateSelectedMeeting();
 				}
 			}
 			catch (RemotingException e)
@@ -298,6 +313,10 @@ namespace Client
 
 					// update local meetings
 					UpdateListBox(this.meetingsListBox, this.meetingsList);
+
+					// if meeting was selected one, update GUI
+					if (this.meetingsListBox.SelectedIndex == this.meetingsList.IndexOf(meeting))
+						UpdateSelectedMeeting();
 				}
 			}
 			catch (RemotingException e)
@@ -338,6 +357,10 @@ namespace Client
 
 					// update local meetings
 					UpdateListBox(this.meetingsListBox, this.meetingsList);
+
+					// if meeting was selected one, update GUI
+					if (this.meetingsListBox.SelectedIndex == meetingIndex)
+						UpdateSelectedMeeting();
 				}
 			}
 			catch (RemotingException e)
@@ -378,21 +401,22 @@ namespace Client
 			int maxAttempts = servers.Count;
 
 			object response = null;
-			while (response is null)
+			bool serverReplied = false;
+			while (!serverReplied)
 			{
 				try
 				{
 					response = getCommunicationServer().Request(executable);
+					serverReplied = true;
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
-					this.logsTextBox.AppendText(e.ToString() + " " + e.Message);
 					// server unavailable
 					attempts++;
 					if (attempts > maxAttempts)
 					{
 						// no other server was available
-						throw new NoServersAvailableException();
+						ThrowErrorPopup(new NoServersAvailableException());
 					}
 					else
 					{
@@ -530,6 +554,6 @@ namespace Client
             }
             appendLog("Using: " + preferredServer);
         }
-    }
+	}
 
 }
