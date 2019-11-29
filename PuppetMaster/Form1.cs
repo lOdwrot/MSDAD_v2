@@ -196,8 +196,8 @@ namespace PuppetMaster
         private void buttonCrashServer_Click(object sender, EventArgs e)
         {
             IServer affectedServer = servers[affectedServerId.Text];
-            affectedServer.freeze();
-            appendMessage("Server freezed");
+            affectedServer.crash();
+            appendMessage("Server crashed");
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -223,6 +223,20 @@ namespace PuppetMaster
                 typeof(ServiceCreator),
                 ServiceCreatorTextBox.Text
             );
+        }
+
+        private void buttonFreezeServer_Click(object sender, EventArgs e)
+        {
+            IServer affectedServer = servers[affectedServerId.Text];
+            affectedServer.freeze();
+            appendMessage("Server freezed");
+        }
+
+        private void buttonUnfreezeServer_Click(object sender, EventArgs e)
+        {
+            IServer affectedServer = servers[affectedServerId.Text];
+            affectedServer.unfreeze();
+            appendMessage("Server unfreezed");
         }
     }
 }

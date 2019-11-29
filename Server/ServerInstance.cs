@@ -11,16 +11,24 @@ namespace Server
 	{
 		List<Meeting> meetings;
 		List<Room> defaultRooms;
-		List<string> defaultLocations;
-        Dictionary<string, string> otherServers;
-        Dictionary<string, string> connectedClients;
+		List<String> defaultLocations;
+        Dictionary<String, String> otherServers;
+        Dictionary<String, String> connectedClientsURLs;
+        String serverId;
+        int minDelay;
+        int maxDelay;
 
-        Dictionary<int, Executable> notDelivered;
-        int lastSequenceNumber;
-        int leaderNumber = 0;
+        List<Executable> notDelivered;
+        Dictionary<String, int> vector_clock;
+        int my_clock = 0;
+        int last_to_sn;
+        String leader;
+        
+        //Leader Variables
+        int to_sn = 0;
 
         private string status = "OK";
-        public ServerInstance()
+        public ServerInstance(String serverId, int minDelay, int maxDelay, int maxFaults)
         {
             this.defaultRooms = new List<Room> {
                 new Room("R1", "Lisboa", 10),
@@ -33,10 +41,16 @@ namespace Server
             };
 
             this.meetings = new List<Meeting>();
-            this.otherServers = new Dictionary<string, string>();
-            this.connectedClients = new Dictionary<string, string>();
-            this.notDelivered = new Dictionary<int, Executable>();
-            this.lastSequenceNumber = 0;
+            this.otherServers = new Dictionary<String, String>();
+            this.connectedClients = new Dictionary<String, String>();
+            this.notDelivered = new List<Executable>();
+            this.serverId = serverId;
+            this.minDelay = minDelay;
+            this.maxDelay = maxDelay;
+            this.vector_clock = new Dictionary<String, int>();
+            this.vector_clock.Add(this.serverId, 0);
+            this.last_to_sn = 0;
+            this.leader = "s1";
         }
 
         public void test()
@@ -52,6 +66,7 @@ namespace Server
 
         public string getStatus()
         {
+            waitForProcessRequest();
             return status;
         }
 
@@ -80,7 +95,8 @@ namespace Server
 
 		public List<Meeting> GetMeetings()
 		{
-			return this.meetings;
+            waitForProcessRequest();
+            return this.meetings;
 		}
 
 		public int CreateMeeting(Meeting newMeeting)
@@ -103,7 +119,7 @@ namespace Server
 
 		public int JoinMeeting(string username, string meetingTopic, List<Slot> slotsPicked)
 		{
-			var meeting = this.meetings
+            var meeting = this.meetings
 				.Where(m => m.topic == meetingTopic)
 				.FirstOrDefault();
 
@@ -183,12 +199,14 @@ namespace Server
 
         public void AddRoom(string location, string roomName, int capacity)
         {
+            waitForProcessRequest();
             defaultRooms.Add(new Room(location, roomName, 10));
         }
 
         public void registerNewServer(String serverId, String serverURL)
         {
             otherServers.Add(serverId, serverURL);
+            this.vector_clock.Add(serverId, 0);
             Console.WriteLine("Registered new server: " + serverId + " | " + serverURL);
         }
 
@@ -240,69 +258,109 @@ namespace Server
             return result;
         }
 
-        
-        private void RB_Broadcast(Executable executable, int sequenceNumber)
+        private void RB_Broadcast(Executable executable)
         {
             //Broadcast to everyone
             foreach (string serverURL in otherServers.Values)
-			{
-				ServerInstance s = (ServerInstance)Activator.GetObject(
+            {
+                ServerInstance s = (ServerInstance)Activator.GetObject(
 					typeof(ServerInstance),
 					serverURL
 				);
-				s.RB_Deliver(executable,sequenceNumber);
+                s.RB_Deliver(executable);
             }
         }
 
-        public Object RB_Deliver(Executable executable, int sequenceNumber)
+        public Object RB_Deliver(Executable executable)
         {
+            this.vector_clock.TryGetValue(executable.serverId, out int current_clock);
             //Checks if this sequence number is older than the last executed, and if it is not already in the list of not delivered
-            if (sequenceNumber > this.lastSequenceNumber & !this.notDelivered.ContainsKey(sequenceNumber))
+            if (executable.clock > current_clock && !this.notDelivered.Contains(executable))
             {
                 //Add to list so no other "echo" executes this
-                this.notDelivered.Add(sequenceNumber, executable);
+                this.notDelivered.Add(executable);
 
                 //Checks if this sequence number is the next to execute
-                while (sequenceNumber != this.lastSequenceNumber + 1)
+                while (executable.clock != current_clock + 1)
                 {
                     System.Threading.Thread.Sleep(200);
                 }
-                //Broadcast before executing
-                RB_Broadcast(executable, sequenceNumber);
 
+                this.vector_clock[executable.serverId] = executable.clock;
+
+                //Broadcast before executing
+                Thread thread = new Thread(() => RB_Broadcast(executable));
+                thread.Start();
+
+                Object output;
+                //if the action is a close:
+                if (executable.action == "closeMeeting")
+                {
+                    //if I am the leader:
+                    if(this.leader == this.serverId)
+                    {
+                        this.to_sn++;
+                        Broadcast(executable, this.to_sn);
+                        this.last_to_sn = executable.to_sn;
+                    }
+                    else
+                    {
+                        while (executable.to_sn != this.last_to_sn + 1)
+                        {
+                            System.Threading.Thread.Sleep(200);
+                        }
+
+                        this.last_to_sn = executable.to_sn;
+                        //Execute the action
+                        output = Deliver(executable);
+
+                        this.notDelivered.Remove(executable);
+                        return output;
+                    }
+                }
                 //Execute the action
-                Object output = Deliver(executable);
-                this.lastSequenceNumber = sequenceNumber;
-                this.notDelivered.Remove(sequenceNumber);
+                output = Deliver(executable);
+
+                this.notDelivered.Remove(executable);
                 return output;
-                //Execute next action if in memory
-                //this.notDelivered.TryGetValue(this.lastSequenceNumber + 1, out Executable nextAction);
-                //if (nextAction != null) RB_Deliver(executable, this.lastSequenceNumber + 1);
             }
+
             return null;
+        }
+
+        private void Broadcast(Executable executable, int to_sn)
+        {
+            this.Change_TO_SN(executable, to_sn);
+            //Broadcast to everyone
+            foreach (KeyValuePair<String, ServerInstance> server in otherServers)
+            {
+                server.Value.Change_TO_SN(executable,to_sn);
+            }
+        }
+
+        public void Change_TO_SN(Executable executable, int sn)
+        {
+            foreach(Executable exec in this.notDelivered)
+            {
+                if(exec.serverId == executable.serverId && exec.clock == executable.clock)
+                {
+                    exec.to_sn = sn;
+                }
+            }
+        }
+
+        public Object TO_CloseMeeting(Executable executable)
+        {
+            return this.CloseMeeting(executable.username, executable.meetingTopic);
         }
 
         public Object Request(Executable executable)
         {
-            //int sequenceNumber = this.leader.getSequenceNumber();
-            otherServers.TryGetValue("s1", out string serverURL);
-			ServerInstance leader = null;
-			if (!(serverURL is null))
-			{
-				leader = (ServerInstance)Activator.GetObject(
-						typeof(ServerInstance),
-						serverURL
-					); 
-			}
-            if (leader == null) leader = this;
-            int sequenceNumber = leader.getSequenceNumber();
-            return RB_Deliver(executable, sequenceNumber);
-        }
-
-        public int getSequenceNumber()
-        {
-            leaderNumber = leaderNumber + 1;
-            return leaderNumber;
+            waitForProcessRequest();
+            this.my_clock = this.my_clock + 1;
+            executable.clock = this.my_clock;
+            executable.serverId = this.serverId;
+            return RB_Deliver(executable);
         }
 
         private Object Deliver(Executable executable)
@@ -312,7 +370,7 @@ namespace Server
                 case "createMeeting":
                     return this.CreateMeeting(executable.newMeeting);
                 case "closeMeeting":
-                    return this.CloseMeeting(executable.username, executable.meetingTopic);
+                    return TO_CloseMeeting(executable);
                 case "joinMeeting":
                     return this.JoinMeeting(executable.username, executable.meetingTopic, executable.slotsPicked);
             }
@@ -322,6 +380,21 @@ namespace Server
         public List<string> getOtherServerAddresses()
         {
             return this.otherServers.Values.ToList();
+        }
+        
+        private void waitForProcessRequest()
+        {
+            if(maxDelay > 0)
+            {
+                Random r = new Random();
+                int rInt = r.Next(minDelay, maxDelay);
+                System.Threading.Thread.Sleep(rInt);
+            }
+
+            while (status != "OK")
+            {
+                System.Threading.Thread.Sleep(200);
+            }
         }
     }
 }

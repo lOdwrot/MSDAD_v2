@@ -482,7 +482,7 @@ namespace Client
 			{
 				// if file does not exist, then just simply run the client as-is
 				// no need to throw error
-				// ThrowErrorPopup(e);
+				ThrowErrorPopup(e);
 			}
 		}
 

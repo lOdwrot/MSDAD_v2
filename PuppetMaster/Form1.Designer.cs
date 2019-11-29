@@ -66,7 +66,6 @@
             this.script = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.buttonExecuteScript = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.ServiceCreatorTextBox = new System.Windows.Forms.TextBox();
             this.label15 = new System.Windows.Forms.Label();
             this.setServiceCreatorButton = new System.Windows.Forms.Button();
@@ -78,7 +77,7 @@
             this.serverId.Name = "serverId";
             this.serverId.Size = new System.Drawing.Size(100, 20);
             this.serverId.TabIndex = 0;
-            this.serverId.Text = "Server1";
+            this.serverId.Text = "s1";
             // 
             // serverURL
             // 
@@ -110,7 +109,7 @@
             this.serverMaxDelay.Name = "serverMaxDelay";
             this.serverMaxDelay.Size = new System.Drawing.Size(100, 20);
             this.serverMaxDelay.TabIndex = 4;
-            this.serverMaxDelay.Text = "5000";
+            this.serverMaxDelay.Text = "1500";
             // 
             // clientUsername
             // 
@@ -333,6 +332,7 @@
             this.buttonFreezeServer.TabIndex = 29;
             this.buttonFreezeServer.Text = "Freeze Server";
             this.buttonFreezeServer.UseVisualStyleBackColor = true;
+            this.buttonFreezeServer.Click += new System.EventHandler(this.buttonFreezeServer_Click);
             // 
             // buttonUnfreezeServer
             // 
@@ -342,6 +342,7 @@
             this.buttonUnfreezeServer.TabIndex = 30;
             this.buttonUnfreezeServer.Text = "Unfreeze Server";
             this.buttonUnfreezeServer.UseVisualStyleBackColor = true;
+            this.buttonUnfreezeServer.Click += new System.EventHandler(this.buttonUnfreezeServer_Click);
             // 
             // affectedServerId
             // 
@@ -349,7 +350,7 @@
             this.affectedServerId.Name = "affectedServerId";
             this.affectedServerId.Size = new System.Drawing.Size(303, 20);
             this.affectedServerId.TabIndex = 31;
-            this.affectedServerId.Text = "Server1";
+            this.affectedServerId.Text = "s1";
             // 
             // label12
             // 
@@ -404,16 +405,6 @@
             this.buttonExecuteScript.UseVisualStyleBackColor = true;
             this.buttonExecuteScript.Click += new System.EventHandler(this.buttonExecuteScript_Click);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(29, 297);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 38;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // ServiceCreatorTextBox
             // 
             this.ServiceCreatorTextBox.Location = new System.Drawing.Point(31, 27);
@@ -445,11 +436,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 590);
+            this.ClientSize = new System.Drawing.Size(744, 590);
             this.Controls.Add(this.setServiceCreatorButton);
             this.Controls.Add(this.label15);
             this.Controls.Add(this.ServiceCreatorTextBox);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.buttonExecuteScript);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.script);
@@ -536,7 +526,6 @@
         private System.Windows.Forms.TextBox script;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Button buttonExecuteScript;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox ServiceCreatorTextBox;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Button setServiceCreatorButton;

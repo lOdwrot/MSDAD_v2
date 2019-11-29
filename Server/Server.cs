@@ -45,7 +45,7 @@ namespace Server
 			TcpChannel channel = new TcpChannel(port);
 			ChannelServices.RegisterChannel(channel, true);
 
-			ServerInstance server = new ServerInstance();
+			ServerInstance server = new ServerInstance(serverId, minDelay, maxDelay, maxFaults);
 
 			RemotingServices.Marshal(server, serviceName, typeof(ServerInstance));
 
