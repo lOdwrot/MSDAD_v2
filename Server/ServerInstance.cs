@@ -23,7 +23,8 @@ namespace Server
         int my_clock = 0;
         int last_to_sn;
         String leader;
-        
+        Boolean leader_election = false;
+
         //Leader Variables
         int to_sn = 0;
 
@@ -50,7 +51,7 @@ namespace Server
             this.vector_clock = new Dictionary<String, int>();
             this.vector_clock.Add(this.serverId, 0);
             this.last_to_sn = 0;
-            this.leader = "s1";
+            this.leader = "s2";
         }
 
         public void test()
@@ -263,11 +264,20 @@ namespace Server
             //Broadcast to everyone
             foreach (string serverURL in otherServers.Values)
             {
-                ServerInstance s = (ServerInstance)Activator.GetObject(
-					typeof(ServerInstance),
-					serverURL
-				);
-                s.RB_Deliver(executable);
+                Thread thread = new Thread(() => {
+                    try{
+                        ServerInstance s = (ServerInstance)Activator.GetObject(
+                            typeof(ServerInstance),
+                            serverURL
+				        );
+                        s.RB_Deliver(executable);
+                    }
+                    catch (Exception e)
+                    {   
+                        //do nothing
+                    }
+                });
+                thread.Start();
             }
         }
 
@@ -300,23 +310,36 @@ namespace Server
                     if(this.leader == this.serverId)
                     {
                         this.to_sn++;
-                        Broadcast(executable, this.to_sn);
-                        this.last_to_sn = executable.to_sn;
+                        TO_Broadcast(executable, this.to_sn);
                     }
                     else
                     {
+                        double timer = 0;
+                        //check if this is the next totalorder closeMeeting() to execute
                         while (executable.to_sn != this.last_to_sn + 1)
                         {
+                            //If no to_sn comes within 2 seconds, start leader election
+                            if (timer >= 2)
+                            {
+                                startLeaderElection(executable.to_sn);
+                                //wait until leader election finishes
+                                while (leader_election == true)
+                                {
+                                    System.Threading.Thread.Sleep(200);
+                                }
+                                //when a new leader is elected remove the request from the list so it can be re-sent 
+                                this.notDelivered.Remove(executable);
+                                this.vector_clock[executable.serverId] = this.vector_clock[executable.serverId] - 1;
+                                timer = 0;
+                                //return result from a new RB_Deliver
+                                return RB_Deliver(executable);
+                            }
+                            //if it is not time to execute, sleep for 0,2 seconds, and try again
                             System.Threading.Thread.Sleep(200);
-                        }
-
-                        this.last_to_sn = executable.to_sn;
-                        //Execute the action
-                        output = Deliver(executable);
-
-                        this.notDelivered.Remove(executable);
-                        return output;
+                            if (executable.to_sn == 0) timer += 0.2;
+                        }  
                     }
+                    this.last_to_sn = executable.to_sn;
                 }
                 //Execute the action
                 output = Deliver(executable);
@@ -328,17 +351,69 @@ namespace Server
             return null;
         }
 
-        private void Broadcast(Executable executable, int to_sn)
+        private void startLeaderElection(int to_sn)
         {
-            this.Change_TO_SN(executable, to_sn);
+            Executable executable = new Executable();
+            executable.action = "LeaderElection";
+            executable.serverId = leader;
+            LE_Broadcast(executable, to_sn);
+
+        }
+
+        private void LE_Broadcast(Executable executable, int to_sn)
+        {
+            remoteSLE(executable);
             //Broadcast to everyone
             foreach (string serverURL in otherServers.Values)
             {
-                ServerInstance s = (ServerInstance)Activator.GetObject(
-                    typeof(ServerInstance),
-                    serverURL
-);
-                s.Change_TO_SN(executable,to_sn);
+                Thread thread = new Thread(() =>
+                {
+                    try
+                    {
+                        ServerInstance s = (ServerInstance)Activator.GetObject(
+                            typeof(ServerInstance),
+                            serverURL
+				        );
+                        s.remoteSLE(executable);
+                    } catch (Exception e)
+                    {
+
+                    }      
+                });
+                thread.Start();
+            }
+        }
+
+        public void remoteSLE(Executable executable)
+        {
+            System.Console.WriteLine("Leader Election started");
+            this.leader_election = true;
+        }
+
+        private void TO_Broadcast(Executable executable, int to_sn)
+        {
+            this.Change_TO_SN(executable, to_sn);
+
+            //Broadcast to everyone
+            foreach (string serverURL in otherServers.Values)
+            {
+                Thread thread = new Thread(() =>
+                {
+                    try
+                    {
+                        ServerInstance s = (ServerInstance)Activator.GetObject(
+                            typeof(ServerInstance),
+                            serverURL
+				        );
+                        s.Change_TO_SN(executable, to_sn);
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+
+                });
+                thread.Start();
             }
         }
 
@@ -351,11 +426,6 @@ namespace Server
                     exec.to_sn = sn;
                 }
             }
-        }
-
-        public Object TO_CloseMeeting(Executable executable)
-        {
-            return this.CloseMeeting(executable.username, executable.meetingTopic);
         }
 
         public Object Request(Executable executable)
@@ -374,7 +444,7 @@ namespace Server
                 case "createMeeting":
                     return this.CreateMeeting(executable.newMeeting);
                 case "closeMeeting":
-                    return TO_CloseMeeting(executable);
+                    return this.CloseMeeting(executable.username, executable.meetingTopic);
                 case "joinMeeting":
                     return this.JoinMeeting(executable.username, executable.meetingTopic, executable.slotsPicked);
             }

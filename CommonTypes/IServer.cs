@@ -17,8 +17,6 @@ namespace CommonTypes
 
 		void crash();
 
-
-
 		List<Meeting> GetMeetings();
 
         void AddRoom(String location, String roomName, int capacity);
@@ -36,7 +34,10 @@ namespace CommonTypes
         object RB_Deliver(Executable executable);
 
         void Change_TO_SN(Executable executable, int sn);
+
         object Request(Executable executable);
+
+        void remoteSLE(Executable executable);
 
         //int getSequenceNumber();
     }
