@@ -13,7 +13,7 @@ namespace Server
 		List<Room> defaultRooms;
 		List<String> defaultLocations;
         Dictionary<String, String> otherServers;
-        Dictionary<String, String> connectedClientsURLs;
+        Dictionary<String, String> connectedClients;
         String serverId;
         int minDelay;
         int maxDelay;
@@ -332,9 +332,13 @@ namespace Server
         {
             this.Change_TO_SN(executable, to_sn);
             //Broadcast to everyone
-            foreach (KeyValuePair<String, ServerInstance> server in otherServers)
+            foreach (string serverURL in otherServers.Values)
             {
-                server.Value.Change_TO_SN(executable,to_sn);
+                ServerInstance s = (ServerInstance)Activator.GetObject(
+                    typeof(ServerInstance),
+                    serverURL
+);
+                s.Change_TO_SN(executable,to_sn);
             }
         }
 
