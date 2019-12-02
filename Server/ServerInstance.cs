@@ -217,43 +217,47 @@ namespace Server
             Console.WriteLine("New client connected: " + clientId + " | " + clientURL);
 		}
 
-        public HashSet<string> getMyClientsSubset()
+        public Dictionary<string, string> getMyClientsSubset()
         {
             int MAX_RETURNS = 5;
-            List<String> clientUrlList = connectedClients.Values.ToList();
-            HashSet<string> result = new HashSet<string>();
-            int addressessQuantity = MAX_RETURNS < clientUrlList.Count
+			Dictionary<string, string> result = new Dictionary<string, string>();
+            int addressessQuantity = MAX_RETURNS < this.connectedClients.Count
                 ? MAX_RETURNS
                 : connectedClients.Count;
 
-            if (MAX_RETURNS >= clientUrlList.Count)
+            if (MAX_RETURNS >= this.connectedClients.Count)
             {
-                clientUrlList.ForEach(v => result.Add(v));
-                
+				foreach (var clientKV in this.connectedClients)
+				{
+					result.Add(clientKV.Key, clientKV.Value);
+				}
             } 
             else
             {
                 var random = new Random();
-                for (int i = 0; i < addressessQuantity; i++)
+				var clientKeys = this.connectedClients.Keys.ToList();
+				for (int i = 0; i < addressessQuantity; i++)
                 {
-                    var nextIndex = random.Next(connectedClients.Count);
-                    result.Add(clientUrlList[nextIndex]);
+                    var clientKey = clientKeys[random.Next(connectedClients.Count)];
+                    result.Add(clientKey, this.connectedClients[clientKey]);
                 }
             }
 
             return result;
         }
 
-        public HashSet<string> getAgregatedClientsSubset()
+        public Dictionary<string, string> getAgregatedClientsSubset()
         {
-            HashSet<string> result = getMyClientsSubset();
+			Dictionary<string, string> result = getMyClientsSubset();
             foreach (string serverURL in otherServers.Values)
             {
 				ServerInstance s = (ServerInstance)Activator.GetObject(
 					typeof(ServerInstance),
 					serverURL
 				);
-                s.getMyClientsSubset().ToList().ForEach(v => result.Add(v));
+				var clientDict = s.getMyClientsSubset();
+				foreach (var clientKV in clientDict)
+					result.Add(clientKV.Key, clientKV.Value);
             }
 
             return result;
