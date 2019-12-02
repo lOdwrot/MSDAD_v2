@@ -8,6 +8,8 @@ namespace Client
 {
 	public class NoServersAvailableException : Exception { }
 
+	public class MeetingsNotRetrievedException : Exception { }
+
 	public class MeetingNotCreatedException : Exception { }
 	public class LocationDoesNotExistException : MeetingNotCreatedException { }
 	public class MeetingAlreadyExistsException : MeetingNotCreatedException { }

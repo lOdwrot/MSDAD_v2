@@ -248,18 +248,24 @@ namespace Client
 				{
 					action = "getMeetings"
 				};
-				List<Meeting> updatedMeetings = null;
+				object output = null;
 				try
 				{
-					updatedMeetings = (List<Meeting>) TryRequest(executable);
+					output = (List<Meeting>) TryRequest(executable);
 				}
 				catch (NoServersAvailableException e)
 				{
 					ThrowErrorPopup(e);
 					return;
 				}
+				if (output is null)
+				{
+					ThrowErrorPopup(new MeetingsNotRetrievedException());
+					return;
+				}
 
 				// add meetings to client meeting
+				List<Meeting> updatedMeetings = (List<Meeting>)output;
 				lock (meetingsListLock)
 				{
 					this.meetingsList = updatedMeetings; 
@@ -290,8 +296,7 @@ namespace Client
                     action = "createMeeting",
                     newMeeting = newMeeting
                 };
-
-				int output = 0;
+				object output = null;
 				try
 				{
 					output = (int)TryRequest(executable);
@@ -301,8 +306,14 @@ namespace Client
 					ThrowErrorPopup(e);
 					return;
 				}
+				if (output is null)
+				{
+					ThrowErrorPopup(new MeetingNotCreatedException());
+					return;
+				}
 
-				switch (output) {
+				int value = (int) output;
+				switch (value) {
 					case -1:
 						ThrowErrorPopup(new LocationDoesNotExistException());
 						break;
@@ -344,7 +355,7 @@ namespace Client
                 };
 
 				// tell server you want to join
-				int output = 0;
+				object output = null;
 				try
 				{
 					output = (int)TryRequest(executable);
@@ -354,8 +365,14 @@ namespace Client
 					ThrowErrorPopup(e);
 					return;
 				}
+				if (output is null)
+				{
+					ThrowErrorPopup(new MeetingNotJoinedException());
+					return;
+				}
 
-				switch (output)
+				int value = (int)output;
+				switch (value)
 				{
 					case -1:
 						ThrowErrorPopup(new UnproposedSlotsMeetingException());
