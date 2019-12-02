@@ -80,12 +80,12 @@ namespace Client
                 client.KnownClients = this.getCommunicationServer().getAgregatedClientsSubset();
 
                 // notify others about my existance
-                client.KnownClients.ToList().ForEach(knownClientUrl =>
+                client.KnownClients.Values.ToList().ForEach(knownClientUrl =>
                 {
                     ((ClientInstance)Activator.GetObject(
                         typeof(ClientInstance),
                         knownClientUrl
-                    )).appendNewClient(client.ClientURL);
+                    )).appendNewClient(userName, client.ClientURL);
                 });
 
                 //notify server about my data and get server list in return
@@ -124,6 +124,15 @@ namespace Client
 			RunNextScript();
 		}
 
+		private void debugAllButton_Click(object sender, EventArgs e)
+		{
+			var commandsRemaining = true;
+			while (commandsRemaining)
+			{
+				commandsRemaining = RunNextScript();
+			}
+		}
+
 		private void button3_Click(object sender, EventArgs e)
 		{
 			CreateMeetingForm meetingPopup = new CreateMeetingForm();
@@ -157,6 +166,7 @@ namespace Client
 			this.topicValueLabel.Text = meeting.topic;
 			this.coordinatorValueLabel.Text = meeting.coordinator;
 			this.participantsValueLabel.Text = meeting.minimumParticipants.ToString();
+			this.statusValueLabel.Text = meeting.status.ToString();
 
 			// if user is coordinator and meeting isn't closed, enable "close meeting" button
 			this.closeMeetingButton.Enabled =
@@ -196,7 +206,7 @@ namespace Client
 
 		private void listKnownClientsButton_Click_1(object sender, EventArgs e)
 		{
-			client.KnownClients.ToList().ForEach(v => appendLog(v));
+			client.KnownClients.Values.ToList().ForEach(v => appendLog(v));
 		}
 
 		private void listServers_Click(object sender, EventArgs e)
@@ -234,7 +244,20 @@ namespace Client
 			try
 			{
 				// ask server about current meetings
-				var updatedMeetings = getCommunicationServer().GetMeetings();
+				Executable executable = new Executable
+				{
+					action = "getMeetings"
+				};
+				List<Meeting> updatedMeetings = null;
+				try
+				{
+					updatedMeetings = (List<Meeting>) TryRequest(executable);
+				}
+				catch (NoServersAvailableException e)
+				{
+					ThrowErrorPopup(e);
+					return;
+				}
 
 				// add meetings to client meeting
 				lock (meetingsListLock)
@@ -267,9 +290,18 @@ namespace Client
                     action = "createMeeting",
                     newMeeting = newMeeting
                 };
-				
-				int output = (int)TryRequest(executable);
-				
+
+				int output = 0;
+				try
+				{
+					output = (int)TryRequest(executable);
+				}
+				catch (NoServersAvailableException e)
+				{
+					ThrowErrorPopup(e);
+					return;
+				}
+
 				switch (output) {
 					case -1:
 						ThrowErrorPopup(new LocationDoesNotExistException());
@@ -311,8 +343,17 @@ namespace Client
                     slotsPicked = slots
                 };
 
-                // tell server you want to join
-                int output = (int)TryRequest(executable);
+				// tell server you want to join
+				int output = 0;
+				try
+				{
+					output = (int)TryRequest(executable);
+				}
+				catch (NoServersAvailableException e)
+				{
+					ThrowErrorPopup(e);
+					return;
+				}
 
 				switch (output)
 				{
@@ -359,8 +400,18 @@ namespace Client
                     username = usernameBox.Text,
                     meetingTopic = meetingTopic
                 };
-                // tell server you want to join
-                Meeting closedMeeting = (Meeting)TryRequest(executable);
+
+				// tell server you want to join
+				Meeting closedMeeting = null;
+				try
+				{
+					closedMeeting = (Meeting)TryRequest(executable);
+				}
+				catch (NoServersAvailableException e)
+				{
+					ThrowErrorPopup(e);
+					return;
+				}
 
 				// TODO: throw custom error if meeting could not be closed
 				if (closedMeeting is null)
@@ -426,7 +477,10 @@ namespace Client
 			{
 				try
 				{
-					response = getCommunicationServer().Request(executable);
+					if (executable.action.Equals("getMeetings"))
+						response = getCommunicationServer().GetMeetings();
+					else
+						response = getCommunicationServer().Request(executable);
 					serverReplied = true;
 				}
 				catch (Exception)
@@ -436,7 +490,7 @@ namespace Client
 					if (attempts > maxAttempts)
 					{
 						// no other server was available
-						ThrowErrorPopup(new NoServersAvailableException());
+						throw new NoServersAvailableException();
 					}
 					else
 					{
@@ -476,6 +530,7 @@ namespace Client
 			{
 				this.scriptCommands = new List<string>(File.ReadAllLines(fileName));
 				this.debugButton.Enabled = true;
+				this.debugAllButton.Enabled = true;
 				this.debugLabel.Text = this.scriptCommands[0];
 			}
 			catch (Exception e)
@@ -486,7 +541,7 @@ namespace Client
 			}
 		}
 
-		private void RunNextScript()
+		private bool RunNextScript()
 		{
 			// grab the first command and parse it
 			string command = this.scriptCommands.First();
@@ -553,10 +608,13 @@ namespace Client
 			{
 				this.debugLabel.Text = emptyFieldText;
 				this.debugButton.Enabled = false;
+				this.debugAllButton.Enabled = false;
+				return false;
 			}
 			else
 			{
 				this.debugLabel.Text = this.scriptCommands[0];
+				return true;
 			}
 
 		}

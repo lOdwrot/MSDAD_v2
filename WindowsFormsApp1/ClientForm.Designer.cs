@@ -44,6 +44,8 @@
 			this.button3 = new System.Windows.Forms.Button();
 			this.meetingsListLabel = new System.Windows.Forms.Label();
 			this.meetingsListBox = new System.Windows.Forms.ListBox();
+			this.statusValueLabel = new System.Windows.Forms.Label();
+			this.statusLabel = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.participantsListBox = new System.Windows.Forms.ListBox();
 			this.participantsValueLabel = new System.Windows.Forms.Label();
@@ -60,6 +62,7 @@
 			this.clearLogsButton = new System.Windows.Forms.Button();
 			this.logsTextBox = new System.Windows.Forms.RichTextBox();
 			this.listServers = new System.Windows.Forms.Button();
+			this.debugAllButton = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.portBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -185,6 +188,7 @@
 			this.debugBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.debugBox.Controls.Add(this.debugAllButton);
 			this.debugBox.Controls.Add(this.debugButton);
 			this.debugBox.Controls.Add(this.debugLabel);
 			this.debugBox.Enabled = false;
@@ -200,9 +204,9 @@
 			this.debugButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.debugButton.Enabled = false;
-			this.debugButton.Location = new System.Drawing.Point(34, 33);
+			this.debugButton.Location = new System.Drawing.Point(6, 33);
 			this.debugButton.Name = "debugButton";
-			this.debugButton.Size = new System.Drawing.Size(75, 21);
+			this.debugButton.Size = new System.Drawing.Size(55, 21);
 			this.debugButton.TabIndex = 4;
 			this.debugButton.Text = "Next";
 			this.debugButton.UseVisualStyleBackColor = true;
@@ -249,6 +253,8 @@
 			// 
 			// splitContainer2.Panel2
 			// 
+			this.splitContainer2.Panel2.Controls.Add(this.statusValueLabel);
+			this.splitContainer2.Panel2.Controls.Add(this.statusLabel);
 			this.splitContainer2.Panel2.Controls.Add(this.label1);
 			this.splitContainer2.Panel2.Controls.Add(this.participantsListBox);
 			this.splitContainer2.Panel2.Controls.Add(this.participantsValueLabel);
@@ -309,10 +315,30 @@
 			this.meetingsListBox.TabIndex = 0;
 			this.meetingsListBox.SelectedIndexChanged += new System.EventHandler(this.meetingsListBox_SelectedIndexChanged);
 			// 
+			// statusValueLabel
+			// 
+			this.statusValueLabel.AutoEllipsis = true;
+			this.statusValueLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.statusValueLabel.Location = new System.Drawing.Point(182, 66);
+			this.statusValueLabel.Name = "statusValueLabel";
+			this.statusValueLabel.Size = new System.Drawing.Size(75, 13);
+			this.statusValueLabel.TabIndex = 19;
+			this.statusValueLabel.Text = "----------------";
+			this.statusValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			// 
+			// statusLabel
+			// 
+			this.statusLabel.AutoSize = true;
+			this.statusLabel.Location = new System.Drawing.Point(7, 66);
+			this.statusLabel.Name = "statusLabel";
+			this.statusLabel.Size = new System.Drawing.Size(40, 13);
+			this.statusLabel.TabIndex = 18;
+			this.statusLabel.Text = "Status:";
+			// 
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(10, 98);
+			this.label1.Location = new System.Drawing.Point(7, 101);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(65, 13);
 			this.label1.TabIndex = 17;
@@ -330,7 +356,7 @@
 			// participantsValueLabel
 			// 
 			this.participantsValueLabel.AutoEllipsis = true;
-			this.participantsValueLabel.Location = new System.Drawing.Point(159, 59);
+			this.participantsValueLabel.Location = new System.Drawing.Point(156, 37);
 			this.participantsValueLabel.Name = "participantsValueLabel";
 			this.participantsValueLabel.Size = new System.Drawing.Size(101, 13);
 			this.participantsValueLabel.TabIndex = 15;
@@ -340,7 +366,7 @@
 			// participantsLabel
 			// 
 			this.participantsLabel.AutoSize = true;
-			this.participantsLabel.Location = new System.Drawing.Point(7, 59);
+			this.participantsLabel.Location = new System.Drawing.Point(7, 37);
 			this.participantsLabel.Name = "participantsLabel";
 			this.participantsLabel.Size = new System.Drawing.Size(87, 13);
 			this.participantsLabel.TabIndex = 14;
@@ -349,7 +375,7 @@
 			// coordinatorValueLabel
 			// 
 			this.coordinatorValueLabel.AutoEllipsis = true;
-			this.coordinatorValueLabel.Location = new System.Drawing.Point(159, 35);
+			this.coordinatorValueLabel.Location = new System.Drawing.Point(156, 24);
 			this.coordinatorValueLabel.Name = "coordinatorValueLabel";
 			this.coordinatorValueLabel.Size = new System.Drawing.Size(101, 15);
 			this.coordinatorValueLabel.TabIndex = 13;
@@ -359,7 +385,7 @@
 			// coordinatorLabel
 			// 
 			this.coordinatorLabel.AutoSize = true;
-			this.coordinatorLabel.Location = new System.Drawing.Point(7, 37);
+			this.coordinatorLabel.Location = new System.Drawing.Point(7, 24);
 			this.coordinatorLabel.Name = "coordinatorLabel";
 			this.coordinatorLabel.Size = new System.Drawing.Size(64, 13);
 			this.coordinatorLabel.TabIndex = 12;
@@ -368,7 +394,7 @@
 			// topicValueLabel
 			// 
 			this.topicValueLabel.AutoEllipsis = true;
-			this.topicValueLabel.Location = new System.Drawing.Point(156, 11);
+			this.topicValueLabel.Location = new System.Drawing.Point(153, 11);
 			this.topicValueLabel.Name = "topicValueLabel";
 			this.topicValueLabel.Size = new System.Drawing.Size(104, 13);
 			this.topicValueLabel.TabIndex = 11;
@@ -411,9 +437,9 @@
 			this.slotListLabel.AutoSize = true;
 			this.slotListLabel.Location = new System.Drawing.Point(7, 187);
 			this.slotListLabel.Name = "slotListLabel";
-			this.slotListLabel.Size = new System.Drawing.Size(76, 13);
+			this.slotListLabel.Size = new System.Drawing.Size(79, 13);
 			this.slotListLabel.TabIndex = 3;
-			this.slotListLabel.Text = "Available Slots";
+			this.slotListLabel.Text = "Available Slots:";
 			// 
 			// slotListBox
 			// 
@@ -461,6 +487,17 @@
 			this.listServers.Text = "List Servers";
 			this.listServers.UseVisualStyleBackColor = true;
 			this.listServers.Click += new System.EventHandler(this.listServers_Click);
+			// 
+			// debugAllButton
+			// 
+			this.debugAllButton.Enabled = false;
+			this.debugAllButton.Location = new System.Drawing.Point(67, 33);
+			this.debugAllButton.Name = "debugAllButton";
+			this.debugAllButton.Size = new System.Drawing.Size(60, 21);
+			this.debugAllButton.TabIndex = 5;
+			this.debugAllButton.Text = "Run All";
+			this.debugAllButton.UseVisualStyleBackColor = true;
+			this.debugAllButton.Click += new System.EventHandler(this.debugAllButton_Click);
 			// 
 			// ClientForm
 			// 
@@ -527,6 +564,9 @@
         private System.Windows.Forms.Button clearLogsButton;
         private System.Windows.Forms.RichTextBox logsTextBox;
         private System.Windows.Forms.Button listServers;
-    }
+		private System.Windows.Forms.Label statusValueLabel;
+		private System.Windows.Forms.Label statusLabel;
+		private System.Windows.Forms.Button debugAllButton;
+	}
 }
 
