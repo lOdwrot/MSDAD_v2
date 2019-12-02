@@ -27,11 +27,11 @@ namespace CommonTypes
 
         List<String> getOtherServerAddresses();
 
-        HashSet<String> getMyClientsSubset();
+		Dictionary<string, string> getMyClientsSubset();
 
-        HashSet<String> getAgregatedClientsSubset();
+        Dictionary<string, string> getAgregatedClientsSubset();
 
-        object RB_Deliver(Executable executable);
+        object RB_Deliver(Executable executable,bool starter=false);
 
         void Change_TO_SN(Executable executable, int sn);
 
