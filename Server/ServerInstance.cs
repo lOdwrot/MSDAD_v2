@@ -17,6 +17,7 @@ namespace Server
         String serverId;
         int minDelay;
         int maxDelay;
+        int maxFaults;
 
         List<Executable> notDelivered;
         Dictionary<String, int> vector_clock;
@@ -52,6 +53,7 @@ namespace Server
             this.vector_clock.Add(this.serverId, 0);
             this.last_to_sn = 0;
             this.leader = "s2";
+            this.maxFaults = 1;
         }
 
         public void test()
@@ -263,8 +265,9 @@ namespace Server
             return result;
         }
 
-        private void RB_Broadcast(Executable executable)
+        private bool RB_Broadcast(Executable executable, bool starter)
         {
+            int replies = 0;
             //Broadcast to everyone
             foreach (string serverURL in otherServers.Values)
             {
@@ -274,7 +277,12 @@ namespace Server
                             typeof(ServerInstance),
                             serverURL
 				        );
-                        s.RB_Deliver(executable);
+                        Object output = s.RB_Deliver(executable);
+                        if (output != null)
+                        {
+                            replies++;
+                        }
+
                     }
                     catch (Exception e)
                     {   
@@ -283,9 +291,22 @@ namespace Server
                 });
                 thread.Start();
             }
+            if (starter)
+            {
+                long unixTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                double timer = 0;
+                while (replies < maxFaults+1)
+                {
+                    if (timer > 2) return false;
+                    System.Threading.Thread.Sleep(50);
+                    timer += 0.05;
+                }
+                System.Console.WriteLine("Waited for: " + (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()-unixTime) + " milliseconds.");
+            }
+            return true;
         }
 
-        public Object RB_Deliver(Executable executable)
+        public Object RB_Deliver(Executable executable, bool starter=false)
         {
             this.vector_clock.TryGetValue(executable.serverId, out int current_clock);
             //Checks if this sequence number is older than the last executed, and if it is not already in the list of not delivered
@@ -303,8 +324,7 @@ namespace Server
                 this.vector_clock[executable.serverId] = executable.clock;
 
                 //Broadcast before executing
-                Thread thread = new Thread(() => RB_Broadcast(executable));
-                thread.Start();
+                if(!RB_Broadcast(executable,starter)) return null;
 
                 Object output;
                 //if the action is a close:
@@ -438,7 +458,7 @@ namespace Server
             this.my_clock = this.my_clock + 1;
             executable.clock = this.my_clock;
             executable.serverId = this.serverId;
-            return RB_Deliver(executable);
+            return RB_Deliver(executable,true);
         }
 
         private Object Deliver(Executable executable)
