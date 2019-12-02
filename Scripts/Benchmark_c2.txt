@@ -1,0 +1,12 @@
+wait 1000
+create c2_topic0 1 2 2 Lisboa,2020-01-05 Porto,2020-02-03 c1 c2 c3 c4
+create c2_topic1 1 2 2 Lisboa,2020-01-06 Porto,2020-02-03 c1 c2 c3 c4
+create c2_topic2 1 2 2 Lisboa,2020-01-07 Porto,2020-02-03 c1 c2 c3 c4
+wait 3000
+list
+join c2_topic0 1 Lisboa,2020-01-05
+join c2_topic1 1 Lisboa,2020-01-06
+join c2_topic2 1 Lisboa,2020-01-07
+close c2_topic0
+close c2_topic1
+close c2_topic2

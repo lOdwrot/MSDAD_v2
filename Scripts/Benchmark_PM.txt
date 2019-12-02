@@ -1,0 +1,17 @@
+Server s1 tcp://localhost:3001/sObj 0 0 0
+Wait 100
+Server s2 tcp://localhost:3002/sObj 1 0 0
+Wait 100
+Server s3 tcp://localhost:3003/sObj 2 0 0
+Wait 100
+Server s4 tcp://localhost:3003/sObj 3 0 0
+Wait 100
+AddRoom Lisboa 2 room1
+AddRoom Porto 1 room2
+Client c1 tcp://localhost:4001/clientObj tcp://localhost:3001/sObj ../../../Scripts/cs1.txt
+Wait 100
+Client c2 tcp://localhost:4002/clientObj tcp://localhost:3002/sObj ../../../Scripts/cs2.txt
+Wait 100
+Client c3 tcp://localhost:4003/clientObj tcp://localhost:3003/sObj ../../../Scripts/cs2.txt
+Wait 100
+Client c3 tcp://localhost:4004/clientObj tcp://localhost:3004/sObj ../../../Scripts/cs2.txt
