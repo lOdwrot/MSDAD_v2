@@ -20,6 +20,7 @@ namespace Server
         int maxFaults;
 
         List<Executable> notDelivered;
+        List<Executable> delivered;
         Dictionary<String, int> vector_clock;
         int my_clock = 0;
         int last_to_sn;
@@ -46,6 +47,7 @@ namespace Server
             this.otherServers = new Dictionary<String, String>();
             this.connectedClients = new Dictionary<String, String>();
             this.notDelivered = new List<Executable>();
+            this.delivered = new List<Executable>();
             this.serverId = serverId;
             this.minDelay = minDelay;
             this.maxDelay = maxDelay;
@@ -310,16 +312,10 @@ namespace Server
         {
             this.vector_clock.TryGetValue(executable.serverId, out int current_clock);
             //Checks if this sequence number is older than the last executed, and if it is not already in the list of not delivered
-            if (executable.clock > current_clock && !this.notDelivered.Contains(executable))
+            if (executable.clock > current_clock && (!this.notDelivered.Contains(executable) || !this.delivered.Contains(executable)) )
             {
                 //Add to list so no other "echo" executes this
                 this.notDelivered.Add(executable);
-
-                //Checks if this sequence number is the next to execute
-                while (executable.clock != current_clock + 1)
-                {
-                    System.Threading.Thread.Sleep(200);
-                }
 
                 this.vector_clock[executable.serverId] = executable.clock;
 
@@ -369,6 +365,8 @@ namespace Server
                 output = Deliver(executable);
 
                 this.notDelivered.Remove(executable);
+                this.delivered.Add(executable);
+                if (my_clock < executable.clock) my_clock = executable.clock;
                 return output;
             }
 
@@ -457,6 +455,7 @@ namespace Server
             waitForProcessRequest();
             this.my_clock = this.my_clock + 1;
             executable.clock = this.my_clock;
+            System.Console.WriteLine("My clock: " + my_clock);
             executable.serverId = this.serverId;
             return RB_Deliver(executable,true);
         }
