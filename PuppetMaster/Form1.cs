@@ -165,7 +165,17 @@ namespace PuppetMaster
                 cClientURL
             );
 
-            clients.Add(cUserName, c);
+            clients.TryGetValue(cUserName, out IClient clientInstance);
+            if (clientInstance != null)
+            {
+                appendMessage("Client " + cUserName + " already exists, replacing by new instance");
+                clients[cUserName] = clientInstance;
+                return;
+            }
+            else
+            {
+                clients.Add(cUserName, c);
+            } 
         }
 
         private void instantiateServer(String sId, String sURL, String sMaxFaults, String sMinDelay, String sMaxDelay)
