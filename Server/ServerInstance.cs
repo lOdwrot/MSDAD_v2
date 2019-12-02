@@ -53,7 +53,7 @@ namespace Server
             this.vector_clock.Add(this.serverId, 0);
             this.last_to_sn = 0;
             this.leader = "s2";
-            this.maxFaults = 1;
+            this.maxFaults = maxFaults;
         }
 
         public void test()
