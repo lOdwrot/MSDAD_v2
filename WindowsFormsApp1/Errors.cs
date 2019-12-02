@@ -19,5 +19,7 @@ namespace Client
 	public class AlreadyJoinedMeetingException : MeetingNotJoinedException { }
 	public class NotInvitedMeetingException : MeetingNotJoinedException { }
 
-	public class MeetingNotClosedException : Exception { }
+    public class NotJoinedMeetingException : MeetingNotJoinedException { }
+
+    public class MeetingNotClosedException : Exception { }
 }

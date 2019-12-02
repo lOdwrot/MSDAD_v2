@@ -128,8 +128,10 @@ namespace Server
 				.Where(m => m.topic == meetingTopic)
 				.FirstOrDefault();
 
-			// can't join if slots are not proposed
-			foreach (var slot in slotsPicked)
+            if (meeting == null) return -4;
+
+            // can't join if slots are not proposed
+            foreach (var slot in slotsPicked)
 			{
 				if (meeting.proposals.Where(p => p.date.Equals(slot.date) && p.location.Equals(slot.location)).Count() == 0)
 					return -1;
@@ -280,15 +282,10 @@ namespace Server
                             serverURL
 				        );
                         Object output = s.RB_Deliver(executable);
-                        if (output != null)
-                        {
-                            replies++;
-                        }
-
+                        replies++;
                     }
                     catch (Exception e)
-                    {   
-                        //do nothing
+                    {
                     }
                 });
                 thread.Start();
@@ -369,7 +366,6 @@ namespace Server
                 if (my_clock < executable.clock) my_clock = executable.clock;
                 return output;
             }
-
             return null;
         }
 
