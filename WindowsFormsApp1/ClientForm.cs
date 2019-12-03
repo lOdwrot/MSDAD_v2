@@ -383,7 +383,10 @@ namespace Client
 					case -3:
 						ThrowErrorPopup(new NotInvitedMeetingException());
 						break;
-					default:
+                    case -4:
+                        ThrowErrorPopup(new NotJoinedMeetingException());
+                        break;
+                    default:
 						// joined meeting successfully; reflect changes client-side
 						var meeting = this.meetingsList.Find(m => m.topic.Equals(meetingTopic));
 						meeting.submitVotes(this.usernameBox.Text, slots);
