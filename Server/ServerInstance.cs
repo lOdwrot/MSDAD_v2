@@ -32,6 +32,7 @@ namespace Server
         private string status = "OK";
         public ServerInstance(String serverId, int minDelay, int maxDelay, int maxFaults)
         {
+            Console.WriteLine("Serever params: id={0}, minDelay={1}, maxDelay={2}, maxFaults={3}", serverId, minDelay, maxDelay, maxFaults);
             this.defaultRooms = new List<Room> {
                 new Room("R1", "Lisboa", 10),
                 new Room("R2", "Lisboa", 50),
@@ -53,7 +54,7 @@ namespace Server
             this.vector_clock.Add(this.serverId, 0);
             this.last_to_sn = 0;
             this.leader = "s2";
-            this.maxFaults = 1;
+            this.maxFaults = maxFaults;
         }
 
         public void test()

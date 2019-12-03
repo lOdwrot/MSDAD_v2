@@ -1,17 +1,33 @@
-Server s1 tcp://localhost:3001/sObj 0 0 0
-Wait 100
 Server s2 tcp://localhost:3002/sObj 1 0 0
 Wait 100
-Server s3 tcp://localhost:3003/sObj 2 0 0
+Server s3 tcp://localhost:3003/sObj 5 0 0
 Wait 100
-Server s4 tcp://localhost:3003/sObj 3 0 0
+Server s4 tcp://localhost:3004/sObj 9 0 0
+Wait 100
+Server s5 tcp://localhost:3005/sObj 3 0 0
+Wait 100
+Server s6 tcp://localhost:3006/sObj 3 0 0
+Wait 100
+Server s7 tcp://localhost:3007/sObj 3 0 0
+Wait 100
+Server s8 tcp://localhost:3008/sObj 3 0 0
+Wait 100
+Server s9 tcp://localhost:3009/sObj 3 0 0
+Wait 100
+Server s10 tcp://localhost:3010/sObj 3 0 0
 Wait 100
 AddRoom Lisboa 2 room1
 AddRoom Porto 1 room2
-Client c1 tcp://localhost:4001/clientObj tcp://localhost:3001/sObj ../../../Scripts/cs1.txt
+Client c1 tcp://localhost:4001/clientObj tcp://localhost:3001/sObj ../../../Scripts/Benchmark_c1.txt
 Wait 100
-Client c2 tcp://localhost:4002/clientObj tcp://localhost:3002/sObj ../../../Scripts/cs2.txt
+Client c2 tcp://localhost:4002/clientObj tcp://localhost:3002/sObj ../../../Scripts/Benchmark_c2.txt
 Wait 100
-Client c3 tcp://localhost:4003/clientObj tcp://localhost:3003/sObj ../../../Scripts/cs2.txt
+Client c3 tcp://localhost:4003/clientObj tcp://localhost:3003/sObj ../../../Scripts/Benchmark_c3.txt
 Wait 100
-Client c3 tcp://localhost:4004/clientObj tcp://localhost:3004/sObj ../../../Scripts/cs2.txt
+Client c4 tcp://localhost:4004/clientObj tcp://localhost:3004/sObj ../../../Scripts/Benchmark_c4.txt
+Client c5 tcp://localhost:4005/clientObj tcp://localhost:3005/sObj ../../../Scripts/Benchmark_c4.txt
+Client c6 tcp://localhost:4006/clientObj tcp://localhost:3006/sObj ../../../Scripts/Benchmark_c4.txt
+Client c7 tcp://localhost:4007/clientObj tcp://localhost:3007/sObj ../../../Scripts/Benchmark_c4.txt
+Client c8 tcp://localhost:4008/clientObj tcp://localhost:3008/sObj ../../../Scripts/Benchmark_c4.txt
+Client c9 tcp://localhost:4009/clientObj tcp://localhost:3009/sObj ../../../Scripts/Benchmark_c4.txt
+Client c10 tcp://localhost:4010/clientObj tcp://localhost:3010/sObj ../../../Scripts/Benchmark_c4.txt
