@@ -283,6 +283,7 @@ namespace Server
 				        );
                         Object output = s.RB_Deliver(executable);
                         replies++;
+                        System.Console.WriteLine("Replies: " + replies);
                     }
                     catch (Exception e)
                     {
@@ -294,7 +295,7 @@ namespace Server
             {
                 long unixTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 double timer = 0;
-                while (replies < maxFaults+1)
+                while (replies < maxFaults)
                 {
                     if (timer > 2) return false;
                     System.Threading.Thread.Sleep(50);
