@@ -292,7 +292,7 @@ namespace Server
                 });
                 thread.Start();
             }
-            if (starter)
+            if (starter && !(leader == serverId))
             {
                 long unixTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 double timer = 0;
