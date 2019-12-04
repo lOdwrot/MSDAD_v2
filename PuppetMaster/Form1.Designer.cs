@@ -187,6 +187,7 @@
             this.buttonAddRoom.TabIndex = 13;
             this.buttonAddRoom.Text = "Add Room";
             this.buttonAddRoom.UseVisualStyleBackColor = true;
+            this.buttonAddRoom.Click += new System.EventHandler(this.buttonAddRoom_Click);
             // 
             // buttonStatus
             // 
@@ -313,6 +314,7 @@
             this.buttonListLocations.TabIndex = 27;
             this.buttonListLocations.Text = "List Locations";
             this.buttonListLocations.UseVisualStyleBackColor = true;
+            this.buttonListLocations.Click += new System.EventHandler(this.buttonListLocations_Click);
             // 
             // buttonCrashServer
             // 
@@ -384,7 +386,7 @@
             this.script.Name = "script";
             this.script.Size = new System.Drawing.Size(193, 20);
             this.script.TabIndex = 35;
-            this.script.Text = "../../../Scripts/pms1-sa.txt";
+            this.script.Text = "../../../Scripts/Benchmark_PM.txt";
             // 
             // label14
             // 
