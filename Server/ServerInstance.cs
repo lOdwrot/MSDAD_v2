@@ -195,9 +195,10 @@ namespace Server
 							meeting.votes = meeting.votes.Take(room.capacity).ToList();
 						}
 
-						// select meeting and return
+						// select meeting, confirm it and return
 						meeting.selectedRoom = room;
 						meeting.selectedSlot = slot;
+						meeting.status = MeetingStatus.Confirmed;
 						return meeting;
 					}
 				}
