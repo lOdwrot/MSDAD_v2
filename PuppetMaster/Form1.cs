@@ -136,7 +136,7 @@ namespace PuppetMaster
                         System.Threading.Thread.Sleep(Int32.Parse(args[0]));
                         break;
                     case "AddRoom":
-                        addRoom(args[0], args[2], args[1]);
+                        addRoom(args[0], args[1], args[2]);
                         break;
                     case "Status":
                         showStatus();
