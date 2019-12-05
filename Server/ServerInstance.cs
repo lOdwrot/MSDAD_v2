@@ -129,7 +129,9 @@ namespace Server
 				.Where(m => m.topic == meetingTopic)
 				.FirstOrDefault();
 
-            if (meeting == null) return -4;
+			// meeting needs to exist
+            if (meeting == null)
+				return -4;
 
             // can't join if slots are not proposed
             foreach (var slot in slotsPicked)
@@ -153,6 +155,10 @@ namespace Server
 		public Meeting CloseMeeting(string username, string meetingTopic)
 		{
 			var meeting = this.meetings.Where(m => m.topic == meetingTopic).FirstOrDefault();
+			// meeting needs to exist
+			if (meeting == null)
+				return null;
+
 			// meeting can't be already closed
 			if (meeting.isClosed())
 				return null;

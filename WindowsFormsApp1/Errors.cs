@@ -15,11 +15,10 @@ namespace Client
 	public class MeetingAlreadyExistsException : MeetingNotCreatedException { }
 
 	public class MeetingNotJoinedException : Exception { }
+	public class InexistantMeetingException : MeetingNotJoinedException { }
 	public class UnproposedSlotsMeetingException : MeetingNotJoinedException { }
 	public class AlreadyJoinedMeetingException : MeetingNotJoinedException { }
 	public class NotInvitedMeetingException : MeetingNotJoinedException { }
-
-    public class NotJoinedMeetingException : MeetingNotJoinedException { }
 
     public class MeetingNotClosedException : Exception { }
 }

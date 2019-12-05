@@ -384,7 +384,7 @@ namespace Client
 						ThrowErrorPopup(new NotInvitedMeetingException());
 						break;
                     case -4:
-                        ThrowErrorPopup(new NotJoinedMeetingException());
+                        ThrowErrorPopup(new InexistantMeetingException());
                         break;
                     default:
 						// joined meeting successfully; reflect changes client-side
@@ -497,11 +497,28 @@ namespace Client
 			{
 				try
 				{
-					if (executable.action.Equals("getMeetings"))
-						response = getCommunicationServer().GetMeetings();
-					else
-						response = getCommunicationServer().Request(executable);
-					serverReplied = true;
+					object threadResponse = null;
+					Thread t = new Thread(() => {
+						if (executable.action.Equals("getMeetings"))
+							threadResponse = getCommunicationServer().GetMeetings();
+						else
+							threadResponse = getCommunicationServer().Request(executable);
+						serverReplied = true;
+					});
+					t.Start();
+
+					var time = 0.0;
+					while (!serverReplied)
+					{
+						time += 0.1;
+						Thread.Sleep(100);
+						if (time >= 4)
+						{
+							t.Abort();
+							throw new RemotingTimeoutException();
+						}
+					}
+					response = threadResponse;
 				}
 				catch (Exception)
 				{
