@@ -18,6 +18,7 @@ namespace Server
         int minDelay;
         int maxDelay;
         int maxFaults;
+        List<String> alive = new List<String>();
 
         List<Executable> notDelivered;
         List<Executable> delivered;
@@ -56,7 +57,7 @@ namespace Server
             this.vector_clock.Add(this.serverId, 0);
             this.last_to_sn = 0;
             this.leader = "s2";
-            this.maxFaults = maxFaults;
+            this.maxFaults = maxFaults-1;
         }
 
         public void test()
@@ -341,13 +342,19 @@ namespace Server
                     else
                     {
                         double timer = 0;
+                        bool le = true;
                         //check if this is the next totalorder closeMeeting() to execute
                         while (executable.to_sn != this.last_to_sn + 1)
                         {
+                            if (timer >= 1 && starter && le)
+                            {
+                                if (!startLeaderElection(executable.to_sn)) return null;
+                                le = false;
+                                stopLeaderElection();
+                            }
                             //If no to_sn comes within 2 seconds, start leader election
                             if (timer >= 2)
                             {
-                                startLeaderElection(executable.to_sn);
                                 //wait until leader election finishes
                                 while (leader_election == true)
                                 {
@@ -378,18 +385,24 @@ namespace Server
             return null;
         }
 
-        private void startLeaderElection(int to_sn)
+        private bool startLeaderElection(int to_sn)
         {
             Executable executable = new Executable();
             executable.action = "LeaderElection";
             executable.serverId = leader;
-            LE_Broadcast(executable, to_sn);
-
+            return LE_Broadcast(executable, to_sn);
+        }
+        
+        public void stopLE(String newLeader)
+        {
+            this.leader = newLeader;
+            this.leader_election = false;
+            System.Console.WriteLine("Leader Election ended, new Leader: " + this.leader);
         }
 
-        private void LE_Broadcast(Executable executable, int to_sn)
+        private bool stopLeaderElection()
         {
-            remoteSLE(executable);
+            stopLE(alive[0]);
             //Broadcast to everyone
             foreach (string serverURL in otherServers.Values)
             {
@@ -400,8 +413,36 @@ namespace Server
                         ServerInstance s = (ServerInstance)Activator.GetObject(
                             typeof(ServerInstance),
                             serverURL
+                        );
+                        s.stopLE(alive[0]);
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                });
+                thread.Start();
+            }
+            return true;
+        }
+
+        private bool LE_Broadcast(Executable executable, int to_sn)
+        {
+            alive.Add(remoteSLE(executable));
+            //Broadcast to everyone
+            int replies = 0;
+            foreach (string serverURL in otherServers.Values)
+            {
+                Thread thread = new Thread(() =>
+                {
+                    try
+                    {
+                        ServerInstance s = (ServerInstance)Activator.GetObject(
+                            typeof(ServerInstance),
+                            serverURL
 				        );
-                        s.remoteSLE(executable);
+                        alive.Add(s.remoteSLE(executable));
+                        replies++;
                     } catch (Exception e)
                     {
 
@@ -409,12 +450,21 @@ namespace Server
                 });
                 thread.Start();
             }
+            double timer = 0;
+            while (replies < maxFaults)
+            {
+                if (timer >= 2) return false;
+                System.Threading.Thread.Sleep(50);
+                timer += 0.05;
+            }
+            return true;
         }
 
-        public void remoteSLE(Executable executable)
+        public String remoteSLE(Executable executable)
         {
             System.Console.WriteLine("Leader Election started");
             this.leader_election = true;
+            return this.serverId;
         }
 
         private void TO_Broadcast(Executable executable, int to_sn)

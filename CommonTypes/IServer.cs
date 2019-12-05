@@ -37,7 +37,9 @@ namespace CommonTypes
 
         object Request(Executable executable);
 
-        void remoteSLE(Executable executable);
+        String remoteSLE(Executable executable);
+
+        void stopLE(String newLeader);
 
         //int getSequenceNumber();
     }
