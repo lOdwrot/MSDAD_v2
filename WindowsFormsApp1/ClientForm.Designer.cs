@@ -36,6 +36,7 @@
 			this.usernameBox = new System.Windows.Forms.TextBox();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.debugBox = new System.Windows.Forms.GroupBox();
+			this.debugAllButton = new System.Windows.Forms.Button();
 			this.debugButton = new System.Windows.Forms.Button();
 			this.debugLabel = new System.Windows.Forms.Label();
 			this.schedulerGroupBox = new System.Windows.Forms.GroupBox();
@@ -62,7 +63,6 @@
 			this.clearLogsButton = new System.Windows.Forms.Button();
 			this.logsTextBox = new System.Windows.Forms.RichTextBox();
 			this.listServers = new System.Windows.Forms.Button();
-			this.debugAllButton = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.portBox)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -198,6 +198,17 @@
 			this.debugBox.TabIndex = 6;
 			this.debugBox.TabStop = false;
 			this.debugBox.Text = "Debug";
+			// 
+			// debugAllButton
+			// 
+			this.debugAllButton.Enabled = false;
+			this.debugAllButton.Location = new System.Drawing.Point(67, 33);
+			this.debugAllButton.Name = "debugAllButton";
+			this.debugAllButton.Size = new System.Drawing.Size(60, 21);
+			this.debugAllButton.TabIndex = 5;
+			this.debugAllButton.Text = "Run All";
+			this.debugAllButton.UseVisualStyleBackColor = true;
+			this.debugAllButton.Click += new System.EventHandler(this.debugAllButton_Click);
 			// 
 			// debugButton
 			// 
@@ -349,7 +360,6 @@
 			this.participantsListBox.FormattingEnabled = true;
 			this.participantsListBox.Location = new System.Drawing.Point(7, 117);
 			this.participantsListBox.Name = "participantsListBox";
-			this.participantsListBox.SelectionMode = System.Windows.Forms.SelectionMode.None;
 			this.participantsListBox.Size = new System.Drawing.Size(235, 56);
 			this.participantsListBox.TabIndex = 16;
 			// 
@@ -487,17 +497,6 @@
 			this.listServers.Text = "List Servers";
 			this.listServers.UseVisualStyleBackColor = true;
 			this.listServers.Click += new System.EventHandler(this.listServers_Click);
-			// 
-			// debugAllButton
-			// 
-			this.debugAllButton.Enabled = false;
-			this.debugAllButton.Location = new System.Drawing.Point(67, 33);
-			this.debugAllButton.Name = "debugAllButton";
-			this.debugAllButton.Size = new System.Drawing.Size(60, 21);
-			this.debugAllButton.TabIndex = 5;
-			this.debugAllButton.Text = "Run All";
-			this.debugAllButton.UseVisualStyleBackColor = true;
-			this.debugAllButton.Click += new System.EventHandler(this.debugAllButton_Click);
 			// 
 			// ClientForm
 			// 
