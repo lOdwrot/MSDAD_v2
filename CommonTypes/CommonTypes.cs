@@ -90,6 +90,11 @@ namespace CommonTypes
 			// TODO: check if it already exists
 			this.bookings.Add(date);
 		}
+
+        public String getInfo()
+        {
+            return name + " " + location + " " + capacity.ToString();
+        }
     }
 
 	[Serializable]

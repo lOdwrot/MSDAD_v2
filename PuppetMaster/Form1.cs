@@ -10,6 +10,7 @@ using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Threading;
@@ -26,6 +27,7 @@ namespace PuppetMaster
         private Dictionary<String, String> serverURLs;
 
         private ServiceCreator serviceCreator;
+        private List<Room> rooms;
 
         public delegate string RemoteStatusDelegate();
         public Form1()
@@ -33,6 +35,7 @@ namespace PuppetMaster
             InitializeComponent();
             clients = new Dictionary<String, IClient>();
             servers = new Dictionary<String, IServer>();
+            rooms = new List<Room>();
             TcpChannel channel = new TcpChannel(PORT);
             ChannelServices.RegisterChannel(channel, true);
             serviceCreator = new ServiceCreator();
@@ -133,10 +136,7 @@ namespace PuppetMaster
                         System.Threading.Thread.Sleep(Int32.Parse(args[0]));
                         break;
                     case "AddRoom":
-                        foreach (IServer s in servers.Values)
-                        {
-                            s.AddRoom(args[0], args[2], Int32.Parse(args[1]));
-                        }
+                        addRoom(args[0], args[2], args[1]);
                         break;
                     case "Status":
                         showStatus();
@@ -146,6 +146,28 @@ namespace PuppetMaster
                         break;
                 }
 
+            }
+        }
+
+        private void addRoom(String location, String capacity, String room)
+        {
+            int cp = Int32.Parse(capacity);
+            rooms.Add(new Room(room, location, cp));
+            foreach (String key in servers.Keys)
+            {
+                IServer s = servers[key];
+
+                Thread thread = new Thread(() => {
+                    try
+                    {
+                        s.AddRoom(location, room, cp);
+                    }
+                    catch (Exception e)
+                    {
+                        appendMessage("Can not notify server about new room: " + key);
+                    }
+                });
+                thread.Start();
             }
         }
 
@@ -199,6 +221,12 @@ namespace PuppetMaster
             foreach (IServer server in servers.Values) {
                 server.registerNewServer(sId, sURL);
             }
+
+            foreach(Room r in rooms)
+            {
+                s.AddRoom(r.location, r.name, r.capacity);
+            }
+
             servers.Add(sId, s);
             serverURLs.Add(sId, sURL);
         }
@@ -247,6 +275,19 @@ namespace PuppetMaster
             IServer affectedServer = servers[affectedServerId.Text];
             affectedServer.unfreeze();
             appendMessage("Server unfreezed");
+        }
+
+        private void buttonListLocations_Click(object sender, EventArgs e)
+        {
+            foreach(Room r in rooms)
+            {
+                appendMessage(r.getInfo());
+            }
+        }
+
+        private void buttonAddRoom_Click(object sender, EventArgs e)
+        {
+            this.addRoom(locationLocation.Text, locationCapacity.Text, locationRoom.Text);
         }
     }
 }
