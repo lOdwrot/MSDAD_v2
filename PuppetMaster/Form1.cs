@@ -141,6 +141,17 @@ namespace PuppetMaster
                     case "Status":
                         showStatus();
                         break;
+                    case "Crash":
+                        IServer affectedServer = servers[args[0]];
+                        affectedServer.crash();
+                        appendMessage("Server crashed");
+                        break;
+                    case "PSC":
+                        serviceCreator = (ServiceCreator)Activator.GetObject(
+                            typeof(ServiceCreator),
+                            args[0]
+                        );
+                        break;
                     default:
                         appendMessage("Command Not Implemented" + cmd.CommandName + "\n");
                         break;

@@ -15,7 +15,7 @@ namespace Client
 		public List<string> KnownServers;
 
 		private ClientForm.AddNewMeeting addMeetingMethod;
-		private readonly int GossipNumberOfClients = 2;
+		private readonly int GossipNumberOfClients = 14;
 
 		public ClientInstance(String URL, ClientForm.AddNewMeeting addNewMeeting)
 		{

@@ -1,24 +1,20 @@
-﻿using System;
-using System.Configuration;
+﻿using CommonTypes;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Configuration;
 using System.Data;
-using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Text.RegularExpressions;
-using CommonTypes;
-using System.IO;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace Client
 {
-	public partial class ClientForm : Form
+    public partial class ClientForm : Form
 	{
 		private readonly string emptyFieldText = "----------------";
 
@@ -94,6 +90,13 @@ namespace Client
 
                 // run script file
                 this.ReadScriptFile(scriptFile);
+
+                //Thread t = new Thread(() =>
+                //{
+                //    Thread.Sleep(500);
+                //    debugAllButton_Click(null, null);
+                //});
+                //t.Start();
             }
 		}
 
@@ -251,7 +254,7 @@ namespace Client
 				object output = null;
 				try
 				{
-					output = (List<Meeting>) TryRequest(executable);
+					output = TryRequest(executable);
 				}
 				catch (NoServersAvailableException e)
 				{
@@ -299,7 +302,7 @@ namespace Client
 				object output = null;
 				try
 				{
-					output = (int)TryRequest(executable);
+					output = TryRequest(executable);
 				}
 				catch (NoServersAvailableException e)
 				{
@@ -358,7 +361,7 @@ namespace Client
 				object output = null;
 				try
 				{
-					output = (int)TryRequest(executable);
+					output = TryRequest(executable);
 				}
 				catch (NoServersAvailableException e)
 				{
@@ -389,6 +392,13 @@ namespace Client
                     default:
 						// joined meeting successfully; reflect changes client-side
 						var meeting = this.meetingsList.Find(m => m.topic.Equals(meetingTopic));
+
+                        if (meeting == null)
+                        {
+                            GetMeetingsList();
+                            meeting = this.meetingsList.Find(m => m.topic.Equals(meetingTopic));
+                        }
+
 						meeting.submitVotes(this.usernameBox.Text, slots);
 
 						// update local meetings
@@ -423,18 +433,19 @@ namespace Client
 
 				// tell server you want to join
 				Meeting closedMeeting = null;
+                object output = null;
 				try
 				{
-					closedMeeting = (Meeting)TryRequest(executable);
+                    output = TryRequest(executable);
 				}
 				catch (NoServersAvailableException e)
 				{
 					ThrowErrorPopup(e);
 					return;
 				}
-
-				// TODO: throw custom error if meeting could not be closed
-				if (closedMeeting is null)
+                closedMeeting = (Meeting)output;
+                // TODO: throw custom error if meeting could not be closed
+                if (closedMeeting is null)
 				{
 					ThrowErrorPopup(new MeetingNotClosedException());
 				}
@@ -552,13 +563,14 @@ namespace Client
 
 		private void ThrowErrorPopup(Exception e)
 		{
-			ErrorPopupForm popup = new ErrorPopupForm(e.GetType().ToString(), e.Message);
-			DialogResult dialogresult = popup.ShowDialog();
-			if (dialogresult == DialogResult.OK)
-			{
+            //ErrorPopupForm popup = new ErrorPopupForm(e.GetType().ToString(), e.Message);
+            //DialogResult dialogresult = popup.ShowDialog();
+            //if (dialogresult == DialogResult.OK)
+            //{
 
-			}
-			popup.Dispose();
+            //}
+            //popup.Dispose();
+            appendLog(e.GetType().ToString());
 		}
 
 		private void ReadScriptFile(string fileName)
